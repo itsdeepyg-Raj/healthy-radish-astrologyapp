@@ -6,77 +6,217 @@
     <title>Nikita's Live Astrology Consultations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Lato:wght@300;400;700&display=swap');
         body {
             font-family: 'Lato', sans-serif;
-            background-color: #0f172a; 
+            background-color: #0f172a;
             color: #f8fafc;
         }
         h1, h2, h3 {
             font-family: 'Cinzel', serif;
         }
         .mystic-border {
-            border: 1px solid #d97706; 
-            box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+            border: 1px solid #d97706;
+            box-shadow: 0 0 20px rgba(217, 119, 6, 0.15);
+        }
+        /* Custom scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #475569;
+            border-radius: 3px;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col items-center justify-center p-4">
+<body class="min-h-screen flex flex-col">
 
-    <!-- Landing / Login Screen -->
-    <div id="login-screen" class="max-w-md w-full bg-slate-800 p-8 rounded-lg mystic-border text-center">
-        <h1 class="text-3xl text-amber-500 mb-2">Live Astrological Consultations</h1>
-        <p class="text-sm text-slate-400 mb-6 italic">Connect directly for chart readings and cosmic guidance.</p>
-        
-        <!-- About Me Section -->
-        <div class="mb-6 text-left bg-slate-900 p-4 rounded border border-slate-700">
-            <h3 class="text-amber-500 text-lg mb-2 font-semibold">About Nikita</h3>
-            <p class="text-sm text-slate-300 mb-2">
-                I specialize in precise astrological analysis, focusing on intricate D1 and Navamsha (D9) chart placements, Nakshatras, and planetary Dashas. I am also the author of <em>Scorpio Man Love, Lust and Obsession</em>.
-            </p>
-            <p class="text-sm text-slate-300 border-t border-slate-700 pt-2 mt-2">
-                Join my community and read my latest insights on Reddit: <br>
-                <a href="https://www.reddit.com/user/Healthy-Radish-3769/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 font-bold tracking-wide">u/Healthy-Radish-3769</a>
-            </p>
+    <!-- Top Navigation Bar (Transparent Header Text Background) -->
+    <header class="w-full max-w-5xl mx-auto px-4 py-4 flex justify-between items-center border-b border-slate-800">
+        <div class="bg-transparent">
+            <span class="text-amber-500 font-bold tracking-wider text-lg" style="font-family: 'Cinzel', serif;">NIKITA ASTROLOGY</span>
         </div>
-        
-        <input type="text" id="username-input" placeholder="Enter your name to begin..." 
-               class="w-full p-3 mb-4 rounded bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
-        
-        <button id="join-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded transition duration-300">
-            Start Live Session
-        </button>
+        <div class="flex items-center gap-3">
+            <span id="connection-badge" class="text-xs px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">
+                ● Live System Ready
+            </span>
+            <button id="toggle-admin-modal-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-600/50 py-1.5 px-3 rounded transition">
+                Astrologer Login
+            </button>
+            <button id="logout-admin-btn" class="hidden text-xs bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 py-1.5 px-3 rounded transition">
+                Exit Astrologer Desk
+            </button>
+        </div>
+    </header>
+
+    <!-- Firestore Permission Warning Banner (Only shows if Firebase rules block writes) -->
+    <div id="firebase-error-banner" class="hidden max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
+        <p class="font-bold text-amber-400 mb-1">⚠️ Database Write Blocked by Firebase Rules</p>
+        <p class="mb-2">Go to your <strong>Firebase Console → Firestore Database → Rules</strong> tab and make sure your rules allow read/write access, then click Publish:</p>
+        <pre class="bg-slate-950 p-2 rounded text-xs text-emerald-400 overflow-x-auto">rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      allow read, write: if true;
+    }
+  }
+}</pre>
     </div>
 
-    <!-- Chat / Consultation Interface -->
-    <div id="chat-screen" class="hidden max-w-2xl w-full h-[80vh] flex flex-col bg-slate-800 rounded-lg mystic-border overflow-hidden">
-        
-        <div class="bg-slate-900 p-4 border-b border-amber-600 flex justify-between items-center">
-            <div>
-                <h2 class="text-xl text-amber-500">Live Consultation Room</h2>
-                <p class="text-xs text-slate-400">Connected with Nikita</p>
+    <!-- Main Container -->
+    <main class="flex-1 flex flex-col items-center justify-center p-4 w-full max-w-5xl mx-auto">
+
+        <!-- ========================================== -->
+        <!-- 1. VISITOR SIGN-UP & LANDING SCREEN        -->
+        <!-- ========================================== -->
+        <div id="visitor-signup-screen" class="max-w-lg w-full bg-slate-800/90 p-7 rounded-xl mystic-border">
+            <div class="text-center mb-5 bg-transparent">
+                <h1 class="text-2xl sm:text-3xl text-amber-500 mb-1">Live Astrological Consultations</h1>
+                <p class="text-sm text-slate-400 italic">Private 1-on-1 Chart Readings & Cosmic Guidance</p>
             </div>
-            <button id="leave-btn" class="text-xs bg-red-900 hover:bg-red-800 text-white py-1 px-3 rounded">
-                End Session
-            </button>
+
+            <!-- About Nikita -->
+            <div class="mb-5 text-left bg-slate-900/90 p-4 rounded-lg border border-slate-700">
+                <h3 class="text-amber-500 text-base mb-1.5 font-semibold">About Nikita</h3>
+                <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-2">
+                    I specialize in precise Vedic astrological analysis, focusing on intricate D1 and Navamsha (D9) chart placements, Nakshatras, synastry, and planetary Dashas. Author of <em>Scorpio Man Love, Lust and Obsession</em>.
+                </p>
+                <p class="text-xs text-slate-400 border-t border-slate-800 pt-2">
+                    Read my insights on Reddit: 
+                    <a href="https://www.reddit.com/user/Healthy-Radish-3769/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 font-bold underline">
+                        u/Healthy-Radish-3769
+                    </a>
+                </p>
+            </div>
+
+            <!-- Visitor Intake Form -->
+            <form id="visitor-signup-form" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Your Name *</label>
+                    <input type="text" id="visitor-name" required placeholder="e.g., Aarav Sharma"
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Birth Details (Date, Time & City — for accurate chart reading)</label>
+                    <input type="text" id="visitor-birth" placeholder="e.g., 14 Aug 1994, 06:45 PM, Mumbai"
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Your Question / Consultation Topic *</label>
+                    <textarea id="visitor-topic" rows="2" required placeholder="What would you like guidance on today?"
+                              class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"></textarea>
+                </div>
+                <button type="submit" id="start-session-btn"
+                        class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                    Enter Live Consultation Room
+                </button>
+            </form>
         </div>
 
-        <div id="messages-container" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-4 bg-opacity-50 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
-            <div class="text-center text-xs text-slate-500 my-2">Session Started. The stars are aligned.</div>
+        <!-- ========================================== -->
+        <!-- 2. VISITOR PRIVATE 1-ON-1 CHAT SCREEN      -->
+        <!-- ========================================== -->
+        <div id="visitor-chat-screen" class="hidden max-w-2xl w-full h-[80vh] flex flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
+            <div class="bg-slate-900 p-4 border-b border-amber-600/60 flex justify-between items-center">
+                <div>
+                    <h2 class="text-lg text-amber-500">Private Consultation with Nikita</h2>
+                    <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active • Nikita will reply here shortly</p>
+                </div>
+                <button id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition">
+                    New / End Session
+                </button>
+            </div>
+
+            <div id="visitor-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
+                <!-- Messages populate here -->
+            </div>
+
+            <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
+                <input type="text" id="visitor-msg-input" placeholder="Type your message to Nikita..."
+                       class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500">
+                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-5 rounded-lg transition">
+                    Send
+                </button>
+            </form>
         </div>
 
-        <div class="p-4 bg-slate-900 border-t border-slate-700 flex gap-2">
-            <input type="text" id="message-input" placeholder="Ask about your chart..." 
-                   class="flex-1 p-3 rounded bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-amber-500">
-            <button id="send-btn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded transition duration-300">
-                Send
-            </button>
+        <!-- ========================================== -->
+        <!-- 3. ASTROLOGER LIVE DESK (NIKITA'S VIEW)    -->
+        <!-- ========================================== -->
+        <div id="astrologer-desk-screen" class="hidden w-full h-[82vh] bg-slate-800 rounded-xl mystic-border overflow-hidden flex flex-col md:flex-row">
+            
+            <!-- Left Sidebar: Incoming Visitor Queue -->
+            <div class="w-full md:w-1/3 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col h-1/3 md:h-full">
+                <div class="p-3.5 border-b border-slate-800 flex justify-between items-center">
+                    <h2 class="text-sm font-bold text-amber-500 tracking-wide">CLIENT CONSULTATIONS</h2>
+                    <span id="session-count" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">0</span>
+                </div>
+                <div id="sessions-list" class="flex-1 overflow-y-auto divide-y divide-slate-800/80">
+                    <div class="p-4 text-xs text-slate-500 text-center">Waiting for visitors to sign up...</div>
+                </div>
+            </div>
+
+            <!-- Right Panel: Active 1-on-1 Client Chat -->
+            <div class="w-full md:w-2/3 flex flex-col h-2/3 md:h-full bg-slate-800">
+                <!-- Active Client Header -->
+                <div id="admin-chat-header" class="bg-slate-900/90 p-3.5 border-b border-amber-600/40 flex justify-between items-center">
+                    <div>
+                        <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
+                        <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart details and reply live.</p>
+                    </div>
+                    <button id="delete-session-btn" class="hidden text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded">
+                        Delete Chat
+                    </button>
+                </div>
+
+                <!-- Messages Feed -->
+                <div id="admin-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
+                    <div class="text-center text-xs text-slate-500 my-auto">Your 2-way consultation messages will appear here.</div>
+                </div>
+
+                <!-- Nikita's Reply Box -->
+                <form id="admin-reply-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
+                    <input type="text" id="admin-msg-input" disabled placeholder="Select a client first to reply..."
+                           class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500 disabled:opacity-50">
+                    <button type="submit" id="admin-send-btn" disabled
+                            class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white font-bold py-2 px-5 rounded-lg transition">
+                        Reply
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Astrologer PIN Modal -->
+    <div id="admin-pin-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+        <div class="bg-slate-800 border border-amber-600 rounded-xl p-6 max-w-sm w-full shadow-2xl">
+            <h3 class="text-lg text-amber-500 mb-2">Astrologer Access</h3>
+            <p class="text-xs text-slate-400 mb-4">Enter your Astrologer PIN to open your live client inbox and respond to visitors.</p>
+            <input type="password" id="admin-pin-input" placeholder="Enter PIN (default: 3769)"
+                   class="w-full p-2.5 mb-4 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+            <div class="flex justify-end gap-2">
+                <button id="cancel-pin-btn" class="text-xs text-slate-400 hover:text-white px-3 py-2">Cancel</button>
+                <button id="confirm-pin-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded">Open Desk</button>
+            </div>
         </div>
     </div>
 
+    <!-- Firebase Modular SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        import {
+            getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
+            onSnapshot, query, orderBy, serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        // ==========================================
+        // CONFIGURATION & ASTROLOGER PIN
+        // ==========================================
+        const ASTROLOGER_PIN = "3769"; // Change this PIN anytime you want
 
         const firebaseConfig = {
             apiKey: "AIzaSyC_hOZw707G-PdrK0A1aFqspyJu50LdTe4",
@@ -88,102 +228,242 @@
             measurementId: "G-5TEM82C7EN"
         };
 
-        let app, db, messagesRef;
-        let currentUser = "";
-        
-        const loginScreen = document.getElementById('login-screen');
-        const chatScreen = document.getElementById('chat-screen');
-        const usernameInput = document.getElementById('username-input');
-        const joinBtn = document.getElementById('join-btn');
-        const leaveBtn = document.getElementById('leave-btn');
-        const messagesContainer = document.getElementById('messages-container');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
+        const app = initializeApp(firebaseConfig);
+        const db = getFirestore(app);
+        const sessionsCol = collection(db, "sessions");
 
-        try {
-            app = initializeApp(firebaseConfig);
-            db = getFirestore(app);
-            messagesRef = collection(db, "consultations");
-        } catch (e) {
-            console.error("Firebase init error:", e);
+        // State
+        let visitorSessionId = localStorage.getItem("astro_visitor_session_id") || null;
+        let visitorName = localStorage.getItem("astro_visitor_name") || "";
+        let visitorUnsubscribe = null;
+
+        let isAdmin = false;
+        let activeAdminSessionId = null;
+        let adminSessionsUnsubscribe = null;
+        let adminMessagesUnsubscribe = null;
+        let sessionsCache = {};
+
+        // DOM Elements
+        const errorBanner = document.getElementById("firebase-error-banner");
+        const visitorSignupScreen = document.getElementById("visitor-signup-screen");
+        const visitorChatScreen = document.getElementById("visitor-chat-screen");
+        const astrologerDeskScreen = document.getElementById("astrologer-desk-screen");
+
+        const toggleAdminModalBtn = document.getElementById("toggle-admin-modal-btn");
+        const logoutAdminBtn = document.getElementById("logout-admin-btn");
+        const adminPinModal = document.getElementById("admin-pin-modal");
+        const adminPinInput = document.getElementById("admin-pin-input");
+
+        function handleFirestoreError(err) {
+            console.error("Firestore error:", err);
+            if (err && (err.code === "permission-denied" || String(err).includes("permission"))) {
+                errorBanner.classList.remove("hidden");
+            } else {
+                alert("Connection notice: " + err.message);
+            }
         }
 
-        joinBtn.addEventListener('click', () => {
-            const name = usernameInput.value.trim();
-            if (!name) return alert("Please enter your name to connect.");
-            
-            currentUser = name;
-            loginScreen.classList.add('hidden');
-            chatScreen.classList.remove('hidden');
-            chatScreen.classList.add('flex');
+        // Helper: Render a chat bubble
+        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false) {
+            const wrapper = document.createElement("div");
+            wrapper.className = `max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
+                isRightSide
+                    ? "bg-amber-600 text-white self-end rounded-br-none"
+                    : "bg-slate-700 text-slate-100 self-start rounded-bl-none border border-slate-600"
+            }`;
 
-            loadMessages();
-        });
+            const header = document.createElement("div");
+            header.className = `text-[10px] uppercase font-bold tracking-wider mb-1 ${
+                isRightSide ? "text-amber-100 text-right" : "text-amber-400 text-left"
+            }`;
+            header.textContent = isAstrologerBadge ? `✦ ${senderLabel} (Astrologer)` : senderLabel;
 
-        leaveBtn.addEventListener('click', () => {
-            chatScreen.classList.add('hidden');
-            chatScreen.classList.remove('flex');
-            loginScreen.classList.remove('hidden');
-            currentUser = "";
-            messagesContainer.innerHTML = ''; 
-        });
+            const body = document.createElement("div");
+            body.className = "whitespace-pre-wrap break-words leading-relaxed";
+            body.textContent = text;
 
-        const sendMessage = async () => {
-            const text = messageInput.value.trim();
-            if (!text) return;
+            wrapper.appendChild(header);
+            wrapper.appendChild(body);
+            return wrapper;
+        }
 
-            messageInput.value = '';
+        // ==========================================
+        // VISITOR FLOW
+        // ==========================================
+        function openVisitorChat(sessionId, name) {
+            visitorSignupScreen.classList.add("hidden");
+            astrologerDeskScreen.classList.add("hidden");
+            visitorChatScreen.classList.remove("hidden");
+            visitorChatScreen.classList.add("flex");
+
+            document.getElementById("visitor-session-subtitle").textContent =
+                `Logged in as ${name} • Messages sync live with Nikita`;
+
+            if (visitorUnsubscribe) visitorUnsubscribe();
+
+            const msgsRef = collection(db, "sessions", sessionId, "messages");
+            const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+            visitorUnsubscribe = onSnapshot(q, (snapshot) => {
+                const container = document.getElementById("visitor-messages");
+                container.innerHTML = "";
+                if (snapshot.empty) {
+                    container.innerHTML = `<div class="text-center text-xs text-slate-400 my-4">Your private room is open. Nikita will respond shortly.</div>`;
+                }
+                snapshot.forEach((docSnap) => {
+                    const m = docSnap.data();
+                    const isClient = m.senderRole === "client";
+                    container.appendChild(
+                        createBubble(
+                            isClient ? m.senderName : "Nikita",
+                            m.text,
+                            isClient,
+                            !isClient
+                        )
+                    );
+                });
+                container.scrollTop = container.scrollHeight;
+            }, handleFirestoreError);
+        }
+
+        // Resume existing visitor session if stored in browser
+        if (visitorSessionId && visitorName) {
+            openVisitorChat(visitorSessionId, visitorName);
+        }
+
+        // Visitor Sign-Up Submit
+        document.getElementById("visitor-signup-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const name = document.getElementById("visitor-name").value.trim();
+            const birth = document.getElementById("visitor-birth").value.trim() || "Not provided";
+            const topic = document.getElementById("visitor-topic").value.trim();
+            if (!name || !topic) return;
+
+            const btn = document.getElementById("start-session-btn");
+            btn.disabled = true;
+            btn.textContent = "Connecting to Live Room...";
 
             try {
-                await addDoc(messagesRef, {
-                    text: text,
-                    sender: currentUser,
+                const sessionDoc = await addDoc(sessionsCol, {
+                    clientName: name,
+                    birthDetails: birth,
+                    createdAt: serverTimestamp(),
+                    lastUpdated: serverTimestamp(),
+                    lastMessage: topic,
+                    unreadByAstrologer: true
+                });
+
+                const msgsRef = collection(db, "sessions", sessionDoc.id, "messages");
+                await addDoc(msgsRef, {
+                    text: `Birth Details: ${birth}\n\nQuestion: ${topic}`,
+                    senderRole: "client",
+                    senderName: name,
                     createdAt: serverTimestamp()
                 });
-            } catch (e) {
-                console.error("Error writing document: ", e);
-                alert("Error sending message. Ensure Firestore Database is enabled in your Firebase Console and set to allow writes.");
-            }
-        };
 
-        sendBtn.addEventListener('click', sendMessage);
-        messageInput.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter') sendMessage();
+                visitorSessionId = sessionDoc.id;
+                visitorName = name;
+                localStorage.setItem("astro_visitor_session_id", visitorSessionId);
+                localStorage.setItem("astro_visitor_name", visitorName);
+
+                openVisitorChat(visitorSessionId, visitorName);
+            } catch (err) {
+                handleFirestoreError(err);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = "Enter Live Consultation Room";
+            }
         });
 
-        function loadMessages() {
-            const q = query(messagesRef, orderBy("createdAt", "asc"));
-            onSnapshot(q, (snapshot) => {
-                messagesContainer.innerHTML = ''; 
-                snapshot.forEach((doc) => {
-                    const data = doc.data();
-                    const alignment = data.sender === currentUser ? "right" : "left";
-                    appendMessage(data.sender, data.text, alignment);
+        // Visitor Send Message
+        document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = document.getElementById("visitor-msg-input");
+            const text = input.value.trim();
+            if (!text || !visitorSessionId) return;
+
+            input.value = "";
+            try {
+                const msgsRef = collection(db, "sessions", visitorSessionId, "messages");
+                await addDoc(msgsRef, {
+                    text,
+                    senderRole: "client",
+                    senderName: visitorName,
+                    createdAt: serverTimestamp()
                 });
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            });
+
+                await updateDoc(doc(db, "sessions", visitorSessionId), {
+                    lastMessage: text,
+                    lastUpdated: serverTimestamp(),
+                    unreadByAstrologer: true
+                });
+            } catch (err) {
+                handleFirestoreError(err);
+            }
+        });
+
+        // Visitor End / Reset Session
+        document.getElementById("visitor-end-btn").addEventListener("click", () => {
+            if (visitorUnsubscribe) visitorUnsubscribe();
+            localStorage.removeItem("astro_visitor_session_id");
+            localStorage.removeItem("astro_visitor_name");
+            visitorSessionId = null;
+            visitorName = "";
+            visitorChatScreen.classList.add("hidden");
+            visitorChatScreen.classList.remove("flex");
+            visitorSignupScreen.classList.remove("hidden");
+        });
+
+        // ==========================================
+        // ASTROLOGER (NIKITA) DESK FLOW
+        // ==========================================
+        toggleAdminModalBtn.addEventListener("click", () => {
+            adminPinModal.classList.remove("hidden");
+            adminPinInput.value = "";
+            adminPinInput.focus();
+        });
+
+        document.getElementById("cancel-pin-btn").addEventListener("click", () => {
+            adminPinModal.classList.add("hidden");
+        });
+
+        function unlockAstrologerDesk() {
+            if (adminPinInput.value.trim() !== ASTROLOGER_PIN) {
+                alert("Incorrect PIN. Default PIN is 3769.");
+                return;
+            }
+            adminPinModal.classList.add("hidden");
+            isAdmin = true;
+
+            visitorSignupScreen.classList.add("hidden");
+            visitorChatScreen.classList.add("hidden");
+            astrologerDeskScreen.classList.remove("hidden");
+            toggleAdminModalBtn.classList.add("hidden");
+            logoutAdminBtn.classList.remove("hidden");
+
+            startAdminSessionListener();
         }
 
-        function appendMessage(sender, text, alignment) {
-            const msgDiv = document.createElement('div');
-            msgDiv.className = `max-w-[80%] rounded p-3 ${
-                alignment === 'right' 
-                ? 'bg-amber-600 text-white self-end rounded-br-none' 
-                : 'bg-slate-700 text-white self-start rounded-bl-none'
-            }`;
-            
-            const senderTag = document.createElement('div');
-            senderTag.className = `text-[10px] uppercase font-bold mb-1 opacity-70 ${alignment === 'right' ? 'text-right' : 'text-left'}`;
-            senderTag.innerText = sender;
+        document.getElementById("confirm-pin-btn").addEventListener("click", unlockAstrologerDesk);
+        adminPinInput.addEventListener("keypress", (e) => {
+            if (e.key === "Enter") unlockAstrologerDesk();
+        });
 
-            const textTag = document.createElement('div');
-            textTag.innerText = text;
+        logoutAdminBtn.addEventListener("click", () => {
+            isAdmin = false;
+            if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
+            if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
+            astrologerDeskScreen.classList.add("hidden");
+            logoutAdminBtn.classList.add("hidden");
+            toggleAdminModalBtn.classList.remove("hidden");
 
-            msgDiv.appendChild(senderTag);
-            msgDiv.appendChild(textTag);
-            messagesContainer.appendChild(msgDiv);
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        }
-    </script>
-</body>
-</html>
+            if (visitorSessionId && visitorName) {
+                openVisitorChat(visitorSessionId, visitorName);
+            } else {
+                visitorSignupScreen.classList.remove("hidden");
+            }
+        });
+
+        function startAdminSessionListener() {
+            const q = query(sessionsCol, orderBy("lastUpdated", "desc"));
+            adminSessionsUnsubscribe = onSnapshot(q, (snapshot) =>
