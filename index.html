@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nikita's Live Astrology Consultations</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Lato:wght@300;400&display=swap');
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #0f172a; 
+            color: #f8fafc;
+        }
+        h1, h2, h3 {
+            font-family: 'Cinzel', serif;
+        }
+        .mystic-border {
+            border: 1px solid #d97706; 
+            box-shadow: 0 0 15px rgba(217, 119, 6, 0.2);
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-4">
+
+    <!-- Landing / Login Screen -->
+    <div id="login-screen" class="max-w-md w-full bg-slate-800 p-8 rounded-lg mystic-border text-center">
+        <h1 class="text-3xl text-amber-500 mb-2">Live Astrological Consultations</h1>
+        <p class="text-sm text-slate-400 mb-6 italic">Connect directly for chart readings and cosmic guidance.</p>
+        
+        <!-- About Me Section -->
+        <div class="mb-6 text-left bg-slate-900 p-4 rounded border border-slate-700">
+            <h3 class="text-amber-500 text-lg mb-2 font-semibold">About Nikita</h3>
+            <p class="text-sm text-slate-300 mb-2">
+                I specialize in precise astrological analysis, focusing on intricate D1 and Navamsha (D9) chart placements, Nakshatras, and planetary Dashas. I am also the author of <em>Scorpio Man Love, Lust and Obsession</em>.
+            </p>
+            <p class="text-sm text-slate-300 border-t border-slate-700 pt-2 mt-2">
+                Join my community and read my latest insights on Reddit: <br>
+                <a href="https://www.reddit.com/user/Healthy-Radish-3769/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 font-bold tracking-wide">u/Healthy-Radish-3769</a>
+            </p>
+        </div>
+        
+        <input type="text" id="username-input" placeholder="Enter your name to begin..." 
+               class="w-full p-3 mb-4 rounded bg-slate-900 border border-slate-700 text-white focus:outline-none focus:border-amber-500">
+        
+        <button id="join-btn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded transition duration-300">
+            Start Live Session
+        </button>
+    </div>
+
+    <!-- Chat / Consultation Interface -->
+    <div id="chat-screen" class="hidden max-w-2xl w-full h-[80vh] flex flex-col bg-slate-800 rounded-lg mystic-border overflow-hidden">
+        
+        <div class="bg-slate-900 p-4 border-b border-amber-600 flex justify-between items-center">
+            <div>
+                <h2 class="text-xl text-amber-500">Live Consultation Room</h2>
+                <p class="text-xs text-slate-400">Connected with Nikita</p>
+            </div>
+            <button id="leave-btn" class="text-xs bg-red-900 hover:bg-red-800 text-white py-1 px-3 rounded">
+                End Session
+            </button>
+        </div>
+
+        <div id="messages-container" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-4 bg-opacity-50 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]">
+            <div class="text-center text-xs text-slate-500 my-2">Session Started. The stars are aligned.</div>
+        </div>
+
+        <div class="p-4 bg-slate-900 border-t border-slate-700 flex gap-2">
+            <input type="text" id="message-input" placeholder="Ask about your chart..." 
+                   class="flex-1 p-3 rounded bg-slate-800 border border-slate-600 text-white focus:outline-none focus:border-amber-500">
+            <button id="send-btn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-6 rounded transition duration-300">
+                Send
+            </button>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+        import { getFirestore, collection, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyC_hOZw707G-PdrK0A1aFqspyJu50LdTe4",
+            authDomain: "healthy-radish-3769-astrology.firebaseapp.com",
+            projectId: "healthy-radish-3769-astrology",
+            storageBucket: "healthy-radish-3769-astrology.firebasestorage.app",
+            messagingSenderId: "1005536680393",
+            appId: "1:1005536680393:web:c2371fe3fac89769ec3018",
+            measurementId: "G-5TEM82C7EN"
+        };
+
+        let app, db, messagesRef;
+        let currentUser = "";
+        
+        const loginScreen = document.getElementById('login-screen');
+        const chatScreen = document.getElementById('chat-screen');
+        const usernameInput = document.getElementById('username-input');
+        const joinBtn = document.getElementById('join-btn');
+        const leaveBtn = document.getElementById('leave-btn');
+        const messagesContainer = document.getElementById('messages-container');
+        const messageInput = document.getElementById('message-input');
+        const sendBtn = document.getElementById('send-btn');
+
+        try {
+            app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            messagesRef = collection(db, "consultations");
+        } catch (e) {
+            console.error("Firebase init error:", e);
+        }
+
+        joinBtn.addEventListener('click', () => {
+            const name = usernameInput.value.trim();
+            if (!name) return alert("Please enter your name to connect.");
+            
+            currentUser = name;
+            loginScreen.classList.add('hidden');
+            chatScreen.classList.remove('hidden');
+            chatScreen.classList.add('flex');
+
+            loadMessages();
+        });
+
+        leaveBtn.addEventListener('click', () => {
+            chatScreen.classList.add('hidden');
+            chatScreen.classList.remove('flex');
+            loginScreen.classList.remove('hidden');
+            currentUser = "";
+            messagesContainer.innerHTML = ''; 
+        });
+
+        const sendMessage = async () => {
+            const text = messageInput.value.trim();
+            if (!text) return;
+
+            messageInput.value = '';
+
+            try {
+                await addDoc(messagesRef, {
+                    text: text,
+                    sender: currentUser,
+                    createdAt: serverTimestamp()
+                });
+            } catch (e) {
+                console.error("Error writing document: ", e);
+                alert("Error sending message. Ensure Firestore Database is enabled in your Firebase Console and set to allow writes.");
+            }
+        };
+
+        sendBtn.addEventListener('click', sendMessage);
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') sendMessage();
+        });
+
+        function loadMessages() {
+            const q = query(messagesRef, orderBy("createdAt", "asc"));
+            onSnapshot(q, (snapshot) => {
+                messagesContainer.innerHTML = ''; 
+                snapshot.forEach((doc) => {
+                    const data = doc.data();
+                    const alignment = data.sender === currentUser ? "right" : "left";
+                    appendMessage(data.sender, data.text, alignment);
+                });
+                messagesContainer.scrollTop = messagesContainer.scrollHeight;
+            });
+        }
+
+        function appendMessage(sender, text, alignment) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `max-w-[80%] rounded p-3 ${
+                alignment === 'right' 
+                ? 'bg-amber-600 text-white self-end rounded-br-none' 
+                : 'bg-slate-700 text-white self-start rounded-bl-none'
+            }`;
+            
+            const senderTag = document.createElement('div');
+            senderTag.className = `text-[10px] uppercase font-bold mb-1 opacity-70 ${alignment === 'right' ? 'text-right' : 'text-left'}`;
+            senderTag.innerText = sender;
+
+            const textTag = document.createElement('div');
+            textTag.innerText = text;
+
+            msgDiv.appendChild(senderTag);
+            msgDiv.appendChild(textTag);
+            messagesContainer.appendChild(msgDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+    </script>
+</body>
+</html>
