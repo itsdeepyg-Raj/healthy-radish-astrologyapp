@@ -55,16 +55,8 @@
 
     <!-- Firestore Setup / Rules Warning Banner -->
     <div id="firebase-error-banner" style="display: none;" class="max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
-        <p class="font-bold text-amber-400 mb-1">⚠️ Database Setup Needed in Firebase Console</p>
-        <p id="firebase-error-detail" class="mb-2">Open your <strong>Firebase Console → Build → Firestore Database</strong>, ensure the database is created, and set the <strong>Rules</strong> tab to:</p>
-        <pre class="bg-slate-950 p-2 rounded text-xs text-emerald-400 overflow-x-auto">rules_version = '2';
-service cloud.firestore {
-  match /databases/{database}/documents {
-    match /{document=**} {
-      allow read, write: if true;
-    }
-  }
-}</pre>
+        <p class="font-bold text-amber-400 mb-1">⚠️ Database Notice</p>
+        <p id="firebase-error-detail" class="mb-2">Check your <strong>Firebase Console → Build → Firestore Database → Rules</strong> tab.</p>
     </div>
 
     <!-- Main Container -->
@@ -85,12 +77,15 @@ service cloud.firestore {
                 <p class="text-xs sm:text-sm text-slate-300 leading-relaxed mb-2">
                     I specialize in precise Vedic astrological analysis, focusing on intricate D1 and Navamsha (D9) chart placements, Nakshatras, synastry, and planetary Dashas. Author of <em>Scorpio Man Love, Lust and Obsession</em>.
                 </p>
-                <p class="text-xs text-slate-400 border-t border-slate-800 pt-2">
-                    Read my insights on Reddit: 
-                    <a href="https://www.reddit.com/user/Healthy-Radish-3769/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 font-bold underline">
-                        u/Healthy-Radish-3769
-                    </a>
-                </p>
+                <div class="flex flex-wrap justify-between items-center gap-2 text-xs text-slate-400 border-t border-slate-800 pt-2">
+                    <span>
+                        Reddit: 
+                        <a href="https://www.reddit.com/user/Healthy-Radish-3769/" target="_blank" rel="noopener noreferrer" class="text-amber-400 hover:text-amber-300 font-bold underline">
+                            u/Healthy-Radish-3769
+                        </a>
+                    </span>
+                    <span id="landing-rate-badge" class="text-emerald-400 font-semibold"></span>
+                </div>
             </div>
 
             <!-- Visitor Intake Form -->
@@ -101,9 +96,14 @@ service cloud.firestore {
                            class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
-                    <label class="block text-xs text-slate-300 mb-1">Birth Details (Date, Time & City — for accurate chart reading)</label>
+                    <label class="block text-xs text-slate-300 mb-1">Birth Details (Date, Time & City)</label>
                     <input type="text" id="visitor-birth" placeholder="e.g., 14 Aug 1994, 06:45 PM, Mumbai"
                            class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Attach Natal Chart Screenshot (Optional — D1 / D9 image)</label>
+                    <input type="file" id="signup-chart-file" accept="image/*"
+                           class="w-full text-xs text-slate-300 file:mr-3 file:py-2 file:px-3 file:rounded file:border-0 file:text-xs file:font-semibold file:bg-slate-700 file:text-amber-400 hover:file:bg-slate-600 bg-slate-900 border border-slate-700 rounded p-1.5 cursor-pointer">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Your Question / Consultation Topic *</label>
@@ -121,23 +121,40 @@ service cloud.firestore {
         <!-- ========================================== -->
         <!-- 2. VISITOR PRIVATE 1-ON-1 CHAT SCREEN      -->
         <!-- ========================================== -->
-        <div id="visitor-chat-screen" style="display: none;" class="max-w-2xl w-full h-[80vh] flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
-            <div class="bg-slate-900 p-4 border-b border-amber-600/60 flex justify-between items-center">
+        <div id="visitor-chat-screen" style="display: none;" class="max-w-2xl w-full h-[82vh] flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
+            <div class="bg-slate-900 p-3.5 border-b border-amber-600/60 flex justify-between items-center gap-2">
                 <div>
-                    <h2 class="text-lg text-amber-500">Private Consultation with Nikita</h2>
-                    <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active • Nikita will reply here shortly</p>
+                    <h2 class="text-base sm:text-lg text-amber-500">Private Consultation with Nikita</h2>
+                    <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active</p>
                 </div>
-                <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition cursor-pointer">
-                    New / End Session
-                </button>
+                <div class="flex items-center gap-2">
+                    <a id="header-pay-link" href="#" target="_blank" rel="noopener noreferrer" style="display: none;"
+                       class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 rounded transition">
+                        Pay Session Fee
+                    </a>
+                    <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition cursor-pointer">
+                        End Session
+                    </button>
+                </div>
             </div>
 
             <div id="visitor-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3"></div>
 
-            <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
-                <input type="text" id="visitor-msg-input" placeholder="Type your message to Nikita..."
+            <!-- Selected Image Preview Bar for Visitor -->
+            <div id="visitor-image-preview-bar" style="display: none;" class="px-4 py-2 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400">
+                <span id="visitor-image-filename">Chart image ready to send</span>
+                <button type="button" onclick="clearVisitorChatImage()" class="text-red-400 hover:text-red-300 font-bold cursor-pointer">✕ Remove</button>
+            </div>
+
+            <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
+                <input type="file" id="visitor-chat-file" accept="image/*" class="hidden">
+                <button type="button" onclick="document.getElementById('visitor-chat-file').click()" title="Attach Natal Chart or Payment Receipt"
+                        class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-400 text-sm cursor-pointer transition">
+                    📎
+                </button>
+                <input type="text" id="visitor-msg-input" placeholder="Type message or attach chart/receipt..."
                        class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500">
-                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-5 rounded-lg transition cursor-pointer">
+                <button type="submit" id="visitor-send-btn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-5 rounded-lg transition cursor-pointer">
                     Send
                 </button>
             </form>
@@ -161,18 +178,25 @@ service cloud.firestore {
 
             <!-- Right Panel: Active 1-on-1 Client Chat -->
             <div class="w-full md:w-2/3 flex flex-col h-2/3 md:h-full bg-slate-800">
-                <div id="admin-chat-header" class="bg-slate-900/90 p-3.5 border-b border-amber-600/40 flex justify-between items-center">
+                <div id="admin-chat-header" class="bg-slate-900/90 p-3.5 border-b border-amber-600/40 flex flex-wrap justify-between items-center gap-2">
                     <div>
                         <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
-                        <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart details and reply live.</p>
+                        <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart and reply live.</p>
                     </div>
-                    <button type="button" id="delete-session-btn" style="display: none;" class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded cursor-pointer">
-                        Delete Chat
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <button type="button" id="request-payment-btn" style="display: none;"
+                                class="text-xs bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600 py-1.5 px-3 rounded font-semibold cursor-pointer transition">
+                            💳 Request Payment
+                        </button>
+                        <button type="button" id="delete-session-btn" style="display: none;"
+                                class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1.5 px-2.5 rounded cursor-pointer">
+                            Delete Chat
+                        </button>
+                    </div>
                 </div>
 
                 <div id="admin-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
-                    <div class="text-center text-xs text-slate-500 my-auto">Your 2-way consultation messages will appear here.</div>
+                    <div class="text-center text-xs text-slate-500 my-auto">Your 2-way consultation messages and client charts will appear here.</div>
                 </div>
 
                 <form id="admin-reply-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
@@ -188,7 +212,16 @@ service cloud.firestore {
 
     </main>
 
-    <!-- Astrologer PIN Modal (No PIN exposed in text) -->
+    <!-- Full-Screen Chart Zoom Modal -->
+    <div id="image-zoom-modal" style="display: none;" onclick="this.style.display='none'"
+         class="fixed inset-0 bg-black/90 items-center justify-center p-4 z-50 cursor-zoom-out">
+        <div class="max-w-4xl max-h-[92vh] flex flex-col items-center">
+            <img id="zoomed-chart-img" src="" alt="Natal Chart Full View" class="max-w-full max-h-[85vh] rounded-lg border border-amber-500 shadow-2xl">
+            <span class="text-xs text-slate-300 mt-2">Click anywhere to close</span>
+        </div>
+    </div>
+
+    <!-- Astrologer PIN Modal -->
     <div id="admin-pin-modal" style="display: none;" class="fixed inset-0 bg-black/80 items-center justify-center p-4 z-50">
         <div class="bg-slate-800 border border-amber-600 rounded-xl p-6 max-w-sm w-full shadow-2xl">
             <h3 class="text-lg text-amber-500 mb-2">Astrologer Access</h3>
@@ -205,8 +238,12 @@ service cloud.firestore {
 
     <!-- Immediate UI & Form Guard Script -->
     <script>
-        // Change this PIN to whatever private passcode you prefer
+        // ============================================================
+        // 🛑 CUSTOMIZE YOUR PIN & PAYMENT LINK BELOW 🛑
+        // ============================================================
         const ASTROLOGER_PIN = "3769";
+        const DEFAULT_PAYMENT_LINK = "https://payhip.com/YOUR_STORE_LINK"; // Paste your Payhip, PayPal.me, or Razorpay URL here
+        const CONSULTATION_FEE_LABEL = "Live 1-on-1 Chart Consultation"; // e.g., "$50 / ₹2,500 per session"
 
         function openPinModal() {
             const modal = document.getElementById("admin-pin-modal");
@@ -258,6 +295,11 @@ service cloud.firestore {
             }
         }
 
+        function openImageZoom(src) {
+            document.getElementById("zoomed-chart-img").src = src;
+            document.getElementById("image-zoom-modal").style.display = "flex";
+        }
+
         function handleVisitorFormSubmit(event) {
             event.preventDefault();
             if (window.submitVisitorSession) {
@@ -271,6 +313,12 @@ service cloud.firestore {
         }
 
         window.addEventListener("DOMContentLoaded", () => {
+            document.getElementById("landing-rate-badge").textContent = CONSULTATION_FEE_LABEL;
+            if (!DEFAULT_PAYMENT_LINK.includes("YOUR_STORE_LINK")) {
+                const payBtn = document.getElementById("header-pay-link");
+                payBtn.href = DEFAULT_PAYMENT_LINK;
+                payBtn.style.display = "inline-block";
+            }
             if (window.location.hash === "#astrologer") {
                 openPinModal();
             }
@@ -314,6 +362,7 @@ service cloud.firestore {
         let visitorSessionId = localStorage.getItem("astro_visitor_session_id") || null;
         let visitorName = localStorage.getItem("astro_visitor_name") || "";
         let visitorUnsubscribe = null;
+        let pendingChatImageBase64 = null;
 
         let activeAdminSessionId = null;
         let adminSessionsUnsubscribe = null;
@@ -325,23 +374,53 @@ service cloud.firestore {
             const statusEl = document.getElementById("signup-status-msg");
             errorBanner.style.display = "block";
             if (statusEl) {
-                statusEl.textContent = "Database error: " + (err.message || err.code || "Check Firestore setup above.");
+                statusEl.textContent = "Notice: " + (err.message || err.code || "Database error.");
                 statusEl.style.display = "block";
             }
         }
 
-        function withTimeout(promise, ms = 10000) {
-            return Promise.race([
-                promise,
-                new Promise((_, reject) =>
-                    setTimeout(() => reject(new Error("Connection timed out. Please verify Firestore Database is created in Firebase Console.")), ms)
-                )
-            ]);
+        // Compress any chart screenshot in browser so it fits free Firestore (< 1MB) with zero Storage cost
+        function compressImageFile(file, maxDimension = 1000, quality = 0.72) {
+            return new Promise((resolve, reject) => {
+                if (!file) return resolve(null);
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        let w = img.width;
+                        let h = img.height;
+                        if (w > maxDimension || h > maxDimension) {
+                            if (w > h) {
+                                h = Math.round((h * maxDimension) / w);
+                                w = maxDimension;
+                            } else {
+                                w = Math.round((w * maxDimension) / h);
+                                h = maxDimension;
+                            }
+                        }
+                        const canvas = document.createElement("canvas");
+                        canvas.width = w;
+                        canvas.height = h;
+                        const ctx = canvas.getContext("2d");
+                        ctx.drawImage(img, 0, 0, w, h);
+                        const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                        if (dataUrl.length > 850000) {
+                            reject(new Error("Image is still too large after compression. Please upload a smaller screenshot."));
+                        } else {
+                            resolve(dataUrl);
+                        }
+                    };
+                    img.onerror = () => reject(new Error("Could not read image file."));
+                    img.src = e.target.result;
+                };
+                reader.onerror = () => reject(new Error("Failed to load file."));
+                reader.readAsDataURL(file);
+            });
         }
 
-        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false) {
+        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false, imageData = null, paymentUrl = null) {
             const wrapper = document.createElement("div");
-            wrapper.className = `max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
+            wrapper.className = `max-w-[84%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
                 isRightSide
                     ? "bg-amber-600 text-white self-end rounded-br-none"
                     : "bg-slate-700 text-slate-100 self-start rounded-bl-none border border-slate-600"
@@ -352,13 +431,35 @@ service cloud.firestore {
                 isRightSide ? "text-amber-100 text-right" : "text-amber-400 text-left"
             }`;
             header.textContent = isAstrologerBadge ? `✦ ${senderLabel} (Astrologer)` : senderLabel;
-
-            const body = document.createElement("div");
-            body.className = "whitespace-pre-wrap break-words leading-relaxed";
-            body.textContent = text;
-
             wrapper.appendChild(header);
-            wrapper.appendChild(body);
+
+            if (imageData) {
+                const imgEl = document.createElement("img");
+                imgEl.src = imageData;
+                imgEl.alt = "Attached Natal Chart";
+                imgEl.title = "Click to zoom full size";
+                imgEl.className = "max-h-60 w-auto rounded-lg border border-black/30 mb-2 cursor-zoom-in hover:opacity-95 transition";
+                imgEl.onclick = () => openImageZoom(imageData);
+                wrapper.appendChild(imgEl);
+            }
+
+            if (text) {
+                const body = document.createElement("div");
+                body.className = "whitespace-pre-wrap break-words leading-relaxed";
+                body.textContent = text;
+                wrapper.appendChild(body);
+            }
+
+            if (paymentUrl) {
+                const payCard = document.createElement("a");
+                payCard.href = paymentUrl;
+                payCard.target = "_blank";
+                payCard.rel = "noopener noreferrer";
+                payCard.className = "mt-2.5 block text-center bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow transition";
+                payCard.textContent = "Complete Consultation Payment →";
+                wrapper.appendChild(payCard);
+            }
+
             return wrapper;
         }
 
@@ -371,7 +472,7 @@ service cloud.firestore {
             document.getElementById("visitor-chat-screen").style.display = "flex";
 
             document.getElementById("visitor-session-subtitle").textContent =
-                `Logged in as ${name} • Messages sync live with Nikita`;
+                `Logged in as ${name} • Use 📎 to send chart or receipt`;
 
             if (visitorUnsubscribe) visitorUnsubscribe();
 
@@ -392,7 +493,9 @@ service cloud.firestore {
                             isClient ? m.senderName : "Nikita",
                             m.text,
                             isClient,
-                            !isClient
+                            !isClient,
+                            m.imageData || null,
+                            m.paymentUrl || null
                         )
                     );
                 });
@@ -408,6 +511,7 @@ service cloud.firestore {
             const name = document.getElementById("visitor-name").value.trim();
             const birth = document.getElementById("visitor-birth").value.trim() || "Not provided";
             const topic = document.getElementById("visitor-topic").value.trim();
+            const chartFile = document.getElementById("signup-chart-file").files[0];
             const statusEl = document.getElementById("signup-status-msg");
             statusEl.style.display = "none";
 
@@ -415,25 +519,29 @@ service cloud.firestore {
 
             const btn = document.getElementById("start-session-btn");
             btn.disabled = true;
-            btn.textContent = "Connecting to Live Room...";
+            btn.textContent = chartFile ? "Compressing Chart & Connecting..." : "Connecting to Live Room...";
 
             try {
-                const sessionDoc = await withTimeout(addDoc(sessionsCol, {
+                const compressedChart = await compressImageFile(chartFile);
+
+                const sessionDoc = await addDoc(sessionsCol, {
                     clientName: name,
                     birthDetails: birth,
+                    hasChart: Boolean(compressedChart),
                     createdAt: serverTimestamp(),
                     lastUpdated: serverTimestamp(),
-                    lastMessage: topic,
+                    lastMessage: compressedChart ? `📊 [Chart Attached] ${topic}` : topic,
                     unreadByAstrologer: true
-                }));
+                });
 
                 const msgsRef = collection(db, "sessions", sessionDoc.id, "messages");
-                await withTimeout(addDoc(msgsRef, {
+                await addDoc(msgsRef, {
                     text: `Birth Details: ${birth}\n\nQuestion: ${topic}`,
+                    imageData: compressedChart || null,
                     senderRole: "client",
                     senderName: name,
                     createdAt: serverTimestamp()
-                }));
+                });
 
                 visitorSessionId = sessionDoc.id;
                 visitorName = name;
@@ -449,24 +557,48 @@ service cloud.firestore {
             }
         };
 
+        // Visitor In-Chat File Picker
+        document.getElementById("visitor-chat-file").addEventListener("change", async (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            try {
+                pendingChatImageBase64 = await compressImageFile(file);
+                document.getElementById("visitor-image-filename").textContent = `📊 Ready to send: ${file.name}`;
+                document.getElementById("visitor-image-preview-bar").style.display = "flex";
+            } catch (err) {
+                alert(err.message);
+                e.target.value = "";
+            }
+        });
+
+        window.clearVisitorChatImage = function () {
+            pendingChatImageBase64 = null;
+            document.getElementById("visitor-chat-file").value = "";
+            document.getElementById("visitor-image-preview-bar").style.display = "none";
+        };
+
         document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const input = document.getElementById("visitor-msg-input");
             const text = input.value.trim();
-            if (!text || !visitorSessionId) return;
+            if ((!text && !pendingChatImageBase64) || !visitorSessionId) return;
 
+            const imageToSend = pendingChatImageBase64;
             input.value = "";
+            window.clearVisitorChatImage();
+
             try {
                 const msgsRef = collection(db, "sessions", visitorSessionId, "messages");
                 await addDoc(msgsRef, {
-                    text,
+                    text: text || "Attached image",
+                    imageData: imageToSend || null,
                     senderRole: "client",
                     senderName: visitorName,
                     createdAt: serverTimestamp()
                 });
 
                 await updateDoc(doc(db, "sessions", visitorSessionId), {
-                    lastMessage: text,
+                    lastMessage: imageToSend ? `📎 [Image] ${text || "Chart / Receipt"}` : text,
                     lastUpdated: serverTimestamp(),
                     unreadByAstrologer: true
                 });
@@ -521,15 +653,15 @@ service cloud.firestore {
                     }`;
 
                     const topRow = document.createElement("div");
-                    topRow.className = "flex justify-between items-center w-full";
+                    topRow.className = "flex justify-between items-center w-full gap-1";
                     const nameSpan = document.createElement("span");
                     nameSpan.className = "font-bold text-sm text-white truncate";
-                    nameSpan.textContent = data.clientName || "Visitor";
+                    nameSpan.textContent = (data.hasChart ? "📊 " : "") + (data.clientName || "Visitor");
                     topRow.appendChild(nameSpan);
 
                     if (data.unreadByAstrologer) {
                         const newBadge = document.createElement("span");
-                        newBadge.className = "text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded";
+                        newBadge.className = "text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded shrink-0";
                         newBadge.textContent = "NEW";
                         topRow.appendChild(newBadge);
                     }
@@ -571,6 +703,7 @@ service cloud.firestore {
 
             document.getElementById("active-client-name").textContent = info.clientName || "Client";
             document.getElementById("active-client-birth").textContent = `Birth Details: ${info.birthDetails || "Not provided"}`;
+            document.getElementById("request-payment-btn").style.display = "inline-block";
             document.getElementById("delete-session-btn").style.display = "inline-block";
 
             const replyInput = document.getElementById("admin-msg-input");
@@ -602,13 +735,48 @@ service cloud.firestore {
                             isAstrologer ? "Nikita" : (m.senderName || "Client"),
                             m.text,
                             isAstrologer,
-                            isAstrologer
+                            isAstrologer,
+                            m.imageData || null,
+                            m.paymentUrl || null
                         )
                     );
                 });
                 container.scrollTop = container.scrollHeight;
             }, handleFirestoreError);
         }
+
+        // 1-Click Send Payment Request Card in Chat
+        document.getElementById("request-payment-btn").addEventListener("click", async () => {
+            if (!activeAdminSessionId) return;
+            let linkToSend = DEFAULT_PAYMENT_LINK;
+            if (linkToSend.includes("YOUR_STORE_LINK")) {
+                linkToSend = prompt("Paste your payment link (Payhip, PayPal.me, Gumroad, or Razorpay):");
+                if (!linkToSend || !linkToSend.trim()) return;
+                linkToSend = linkToSend.trim();
+            }
+
+            const feeNote = prompt("Enter fee & session note to show the client:", "To proceed with your detailed D1 & D9 chart reading, please complete the consultation payment below and attach your receipt screenshot here.");
+            if (feeNote === null) return;
+
+            try {
+                const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
+                await addDoc(msgsRef, {
+                    text: feeNote.trim() || "Please complete your consultation payment using the button below:",
+                    paymentUrl: linkToSend,
+                    senderRole: "astrologer",
+                    senderName: "Nikita",
+                    createdAt: serverTimestamp()
+                });
+
+                await updateDoc(doc(db, "sessions", activeAdminSessionId), {
+                    lastMessage: "💳 Payment link sent",
+                    lastUpdated: serverTimestamp(),
+                    unreadByAstrologer: false
+                });
+            } catch (err) {
+                handleFirestoreError(err);
+            }
+        });
 
         document.getElementById("admin-reply-form").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -645,6 +813,7 @@ service cloud.firestore {
                 document.getElementById("active-client-name").textContent = "Select a client on the left";
                 document.getElementById("active-client-birth").textContent = "Session deleted.";
                 document.getElementById("admin-messages").innerHTML = "";
+                document.getElementById("request-payment-btn").style.display = "none";
                 document.getElementById("delete-session-btn").style.display = "none";
                 document.getElementById("admin-msg-input").disabled = true;
                 document.getElementById("admin-send-btn").disabled = true;
