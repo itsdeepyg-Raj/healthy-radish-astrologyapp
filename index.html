@@ -19,7 +19,6 @@
             border: 1px solid #d97706;
             box-shadow: 0 0 20px rgba(217, 119, 6, 0.15);
         }
-        /* Custom scrollbar */
         ::-webkit-scrollbar {
             width: 6px;
         }
@@ -35,27 +34,29 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Top Navigation Bar (Transparent Header Text Background) -->
-    <header class="w-full max-w-5xl mx-auto px-4 py-4 flex justify-between items-center border-b border-slate-800">
+    <header class="w-full max-w-5xl mx-auto px-4 py-4 flex justify-between items-center border-b border-slate-800 bg-transparent">
         <div class="bg-transparent">
-            <span class="text-amber-500 font-bold tracking-wider text-lg" style="font-family: 'Cinzel', serif;">NIKITA ASTROLOGY</span>
+            <span class="text-amber-500 font-bold tracking-wider text-lg bg-transparent" style="font-family: 'Cinzel', serif;">NIKITA ASTROLOGY</span>
         </div>
         <div class="flex items-center gap-3">
-            <span id="connection-badge" class="text-xs px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800">
-                ● Live System Ready
+            <span id="connection-badge" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-amber-400 border border-slate-700">
+                Connecting...
             </span>
-            <button id="toggle-admin-modal-btn" class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-600/50 py-1.5 px-3 rounded transition">
+            <button type="button" id="toggle-admin-modal-btn" onclick="openPinModal()"
+                    class="text-xs bg-slate-800 hover:bg-slate-700 text-amber-400 border border-amber-600/60 py-1.5 px-3 rounded cursor-pointer transition">
                 Astrologer Login
             </button>
-            <button id="logout-admin-btn" class="hidden text-xs bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 py-1.5 px-3 rounded transition">
+            <button type="button" id="logout-admin-btn" onclick="exitAstrologerDesk()" style="display: none;"
+                    class="text-xs bg-red-950 hover:bg-red-900 text-red-200 border border-red-800 py-1.5 px-3 rounded cursor-pointer transition">
                 Exit Astrologer Desk
             </button>
         </div>
     </header>
 
-    <!-- Firestore Permission Warning Banner (Only shows if Firebase rules block writes) -->
-    <div id="firebase-error-banner" class="hidden max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
+    <!-- Firestore Permission Warning Banner -->
+    <div id="firebase-error-banner" style="display: none;" class="max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
         <p class="font-bold text-amber-400 mb-1">⚠️ Database Write Blocked by Firebase Rules</p>
-        <p class="mb-2">Go to your <strong>Firebase Console → Firestore Database → Rules</strong> tab and make sure your rules allow read/write access, then click Publish:</p>
+        <p class="mb-2">Open your <strong>Firebase Console → Firestore Database → Rules</strong> tab, paste these rules, and click <strong>Publish</strong>:</p>
         <pre class="bg-slate-950 p-2 rounded text-xs text-emerald-400 overflow-x-auto">rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -74,8 +75,8 @@ service cloud.firestore {
         <!-- ========================================== -->
         <div id="visitor-signup-screen" class="max-w-lg w-full bg-slate-800/90 p-7 rounded-xl mystic-border">
             <div class="text-center mb-5 bg-transparent">
-                <h1 class="text-2xl sm:text-3xl text-amber-500 mb-1">Live Astrological Consultations</h1>
-                <p class="text-sm text-slate-400 italic">Private 1-on-1 Chart Readings & Cosmic Guidance</p>
+                <h1 class="text-2xl sm:text-3xl text-amber-500 mb-1 bg-transparent">Live Astrological Consultations</h1>
+                <p class="text-sm text-slate-400 italic bg-transparent">Private 1-on-1 Chart Readings & Cosmic Guidance</p>
             </div>
 
             <!-- About Nikita -->
@@ -119,20 +120,18 @@ service cloud.firestore {
         <!-- ========================================== -->
         <!-- 2. VISITOR PRIVATE 1-ON-1 CHAT SCREEN      -->
         <!-- ========================================== -->
-        <div id="visitor-chat-screen" class="hidden max-w-2xl w-full h-[80vh] flex flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
+        <div id="visitor-chat-screen" style="display: none;" class="max-w-2xl w-full h-[80vh] flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
             <div class="bg-slate-900 p-4 border-b border-amber-600/60 flex justify-between items-center">
                 <div>
                     <h2 class="text-lg text-amber-500">Private Consultation with Nikita</h2>
                     <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active • Nikita will reply here shortly</p>
                 </div>
-                <button id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition">
+                <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition">
                     New / End Session
                 </button>
             </div>
 
-            <div id="visitor-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
-                <!-- Messages populate here -->
-            </div>
+            <div id="visitor-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3"></div>
 
             <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
                 <input type="text" id="visitor-msg-input" placeholder="Type your message to Nikita..."
@@ -146,7 +145,7 @@ service cloud.firestore {
         <!-- ========================================== -->
         <!-- 3. ASTROLOGER LIVE DESK (NIKITA'S VIEW)    -->
         <!-- ========================================== -->
-        <div id="astrologer-desk-screen" class="hidden w-full h-[82vh] bg-slate-800 rounded-xl mystic-border overflow-hidden flex flex-col md:flex-row">
+        <div id="astrologer-desk-screen" style="display: none;" class="w-full h-[82vh] bg-slate-800 rounded-xl mystic-border overflow-hidden flex-col md:flex-row">
             
             <!-- Left Sidebar: Incoming Visitor Queue -->
             <div class="w-full md:w-1/3 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col h-1/3 md:h-full">
@@ -161,23 +160,20 @@ service cloud.firestore {
 
             <!-- Right Panel: Active 1-on-1 Client Chat -->
             <div class="w-full md:w-2/3 flex flex-col h-2/3 md:h-full bg-slate-800">
-                <!-- Active Client Header -->
                 <div id="admin-chat-header" class="bg-slate-900/90 p-3.5 border-b border-amber-600/40 flex justify-between items-center">
                     <div>
                         <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
                         <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart details and reply live.</p>
                     </div>
-                    <button id="delete-session-btn" class="hidden text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded">
+                    <button type="button" id="delete-session-btn" style="display: none;" class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded">
                         Delete Chat
                     </button>
                 </div>
 
-                <!-- Messages Feed -->
                 <div id="admin-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
                     <div class="text-center text-xs text-slate-500 my-auto">Your 2-way consultation messages will appear here.</div>
                 </div>
 
-                <!-- Nikita's Reply Box -->
                 <form id="admin-reply-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
                     <input type="text" id="admin-msg-input" disabled placeholder="Select a client first to reply..."
                            class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500 disabled:opacity-50">
@@ -192,31 +188,89 @@ service cloud.firestore {
     </main>
 
     <!-- Astrologer PIN Modal -->
-    <div id="admin-pin-modal" class="hidden fixed inset-0 bg-black/75 flex items-center justify-center p-4 z-50">
+    <div id="admin-pin-modal" style="display: none;" class="fixed inset-0 bg-black/80 items-center justify-center p-4 z-50">
         <div class="bg-slate-800 border border-amber-600 rounded-xl p-6 max-w-sm w-full shadow-2xl">
             <h3 class="text-lg text-amber-500 mb-2">Astrologer Access</h3>
             <p class="text-xs text-slate-400 mb-4">Enter your Astrologer PIN to open your live client inbox and respond to visitors.</p>
-            <input type="password" id="admin-pin-input" placeholder="Enter PIN (default: 3769)"
+            <input type="password" id="admin-pin-input" placeholder="Enter PIN (3769)"
+                   onkeydown="if(event.key==='Enter'){event.preventDefault();verifyPinAndOpenDesk();}"
                    class="w-full p-2.5 mb-4 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
             <div class="flex justify-end gap-2">
-                <button id="cancel-pin-btn" class="text-xs text-slate-400 hover:text-white px-3 py-2">Cancel</button>
-                <button id="confirm-pin-btn" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded">Open Desk</button>
+                <button type="button" onclick="closePinModal()" class="text-xs text-slate-400 hover:text-white px-3 py-2 cursor-pointer">Cancel</button>
+                <button type="button" onclick="verifyPinAndOpenDesk()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded cursor-pointer">Open Desk</button>
             </div>
         </div>
     </div>
 
-    <!-- Firebase Modular SDK -->
+    <!-- Immediate UI Navigation Script (Works Instantly Without Waiting on External CDNs) -->
+    <script>
+        const ASTROLOGER_PIN = "3769";
+
+        function openPinModal() {
+            const modal = document.getElementById("admin-pin-modal");
+            const input = document.getElementById("admin-pin-input");
+            modal.style.display = "flex";
+            input.value = "";
+            setTimeout(() => input.focus(), 50);
+        }
+
+        function closePinModal() {
+            document.getElementById("admin-pin-modal").style.display = "none";
+        }
+
+        function verifyPinAndOpenDesk() {
+            const entered = document.getElementById("admin-pin-input").value.trim();
+            if (entered !== ASTROLOGER_PIN) {
+                alert("Incorrect PIN. Default PIN is 3769.");
+                return;
+            }
+            closePinModal();
+            sessionStorage.setItem("nikita_astro_admin", "true");
+
+            document.getElementById("visitor-signup-screen").style.display = "none";
+            document.getElementById("visitor-chat-screen").style.display = "none";
+            document.getElementById("astrologer-desk-screen").style.display = "flex";
+            document.getElementById("toggle-admin-modal-btn").style.display = "none";
+            document.getElementById("logout-admin-btn").style.display = "inline-block";
+
+            if (window.initAstrologerRealtime) {
+                window.initAstrologerRealtime();
+            }
+        }
+
+        function exitAstrologerDesk() {
+            sessionStorage.removeItem("nikita_astro_admin");
+            if (window.stopAstrologerRealtime) {
+                window.stopAstrologerRealtime();
+            }
+            document.getElementById("astrologer-desk-screen").style.display = "none";
+            document.getElementById("logout-admin-btn").style.display = "none";
+            document.getElementById("toggle-admin-modal-btn").style.display = "inline-block";
+
+            const savedSessionId = localStorage.getItem("astro_visitor_session_id");
+            const savedVisitorName = localStorage.getItem("astro_visitor_name");
+            if (savedSessionId && savedVisitorName) {
+                document.getElementById("visitor-chat-screen").style.display = "flex";
+            } else {
+                document.getElementById("visitor-signup-screen").style.display = "block";
+            }
+        }
+
+        // Auto-open PIN modal if URL ends with #astrologer
+        window.addEventListener("DOMContentLoaded", () => {
+            if (window.location.hash === "#astrologer") {
+                openPinModal();
+            }
+        });
+    </script>
+
+    <!-- Firebase Modular SDK for Live 2-Way Sync -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import {
             getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
             onSnapshot, query, orderBy, serverTimestamp
         } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // ==========================================
-        // CONFIGURATION & ASTROLOGER PIN
-        // ==========================================
-        const ASTROLOGER_PIN = "3769"; // Change this PIN anytime you want
 
         const firebaseConfig = {
             apiKey: "AIzaSyC_hOZw707G-PdrK0A1aFqspyJu50LdTe4",
@@ -228,42 +282,40 @@ service cloud.firestore {
             measurementId: "G-5TEM82C7EN"
         };
 
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-        const sessionsCol = collection(db, "sessions");
+        const badge = document.getElementById("connection-badge");
+        const errorBanner = document.getElementById("firebase-error-banner");
 
-        // State
+        let db, sessionsCol;
+        try {
+            const app = initializeApp(firebaseConfig);
+            db = getFirestore(app);
+            sessionsCol = collection(db, "sessions");
+            badge.textContent = "● Live System Ready";
+            badge.className = "text-xs px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800";
+        } catch (err) {
+            console.error("Firebase init error:", err);
+            badge.textContent = "● Offline Error";
+            badge.className = "text-xs px-2.5 py-1 rounded-full bg-red-950 text-red-400 border border-red-800";
+        }
+
         let visitorSessionId = localStorage.getItem("astro_visitor_session_id") || null;
         let visitorName = localStorage.getItem("astro_visitor_name") || "";
         let visitorUnsubscribe = null;
 
-        let isAdmin = false;
         let activeAdminSessionId = null;
         let adminSessionsUnsubscribe = null;
         let adminMessagesUnsubscribe = null;
         let sessionsCache = {};
 
-        // DOM Elements
-        const errorBanner = document.getElementById("firebase-error-banner");
-        const visitorSignupScreen = document.getElementById("visitor-signup-screen");
-        const visitorChatScreen = document.getElementById("visitor-chat-screen");
-        const astrologerDeskScreen = document.getElementById("astrologer-desk-screen");
-
-        const toggleAdminModalBtn = document.getElementById("toggle-admin-modal-btn");
-        const logoutAdminBtn = document.getElementById("logout-admin-btn");
-        const adminPinModal = document.getElementById("admin-pin-modal");
-        const adminPinInput = document.getElementById("admin-pin-input");
-
         function handleFirestoreError(err) {
             console.error("Firestore error:", err);
             if (err && (err.code === "permission-denied" || String(err).includes("permission"))) {
-                errorBanner.classList.remove("hidden");
+                errorBanner.style.display = "block";
             } else {
-                alert("Connection notice: " + err.message);
+                alert("Database notice: " + err.message);
             }
         }
 
-        // Helper: Render a chat bubble
         function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false) {
             const wrapper = document.createElement("div");
             wrapper.className = `max-w-[82%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
@@ -291,10 +343,9 @@ service cloud.firestore {
         // VISITOR FLOW
         // ==========================================
         function openVisitorChat(sessionId, name) {
-            visitorSignupScreen.classList.add("hidden");
-            astrologerDeskScreen.classList.add("hidden");
-            visitorChatScreen.classList.remove("hidden");
-            visitorChatScreen.classList.add("flex");
+            document.getElementById("visitor-signup-screen").style.display = "none";
+            document.getElementById("astrologer-desk-screen").style.display = "none";
+            document.getElementById("visitor-chat-screen").style.display = "flex";
 
             document.getElementById("visitor-session-subtitle").textContent =
                 `Logged in as ${name} • Messages sync live with Nikita`;
@@ -326,12 +377,10 @@ service cloud.firestore {
             }, handleFirestoreError);
         }
 
-        // Resume existing visitor session if stored in browser
-        if (visitorSessionId && visitorName) {
+        if (visitorSessionId && visitorName && sessionStorage.getItem("nikita_astro_admin") !== "true") {
             openVisitorChat(visitorSessionId, visitorName);
         }
 
-        // Visitor Sign-Up Submit
         document.getElementById("visitor-signup-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const name = document.getElementById("visitor-name").value.trim();
@@ -375,7 +424,6 @@ service cloud.firestore {
             }
         });
 
-        // Visitor Send Message
         document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
             e.preventDefault();
             const input = document.getElementById("visitor-msg-input");
@@ -402,68 +450,184 @@ service cloud.firestore {
             }
         });
 
-        // Visitor End / Reset Session
         document.getElementById("visitor-end-btn").addEventListener("click", () => {
             if (visitorUnsubscribe) visitorUnsubscribe();
             localStorage.removeItem("astro_visitor_session_id");
             localStorage.removeItem("astro_visitor_name");
             visitorSessionId = null;
             visitorName = "";
-            visitorChatScreen.classList.add("hidden");
-            visitorChatScreen.classList.remove("flex");
-            visitorSignupScreen.classList.remove("hidden");
+            document.getElementById("visitor-chat-screen").style.display = "none";
+            document.getElementById("visitor-signup-screen").style.display = "block";
         });
 
         // ==========================================
-        // ASTROLOGER (NIKITA) DESK FLOW
+        // ASTROLOGER REALTIME INBOX & REPLY ENGINE
         // ==========================================
-        toggleAdminModalBtn.addEventListener("click", () => {
-            adminPinModal.classList.remove("hidden");
-            adminPinInput.value = "";
-            adminPinInput.focus();
-        });
+        window.initAstrologerRealtime = function () {
+            if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
 
-        document.getElementById("cancel-pin-btn").addEventListener("click", () => {
-            adminPinModal.classList.add("hidden");
-        });
+            adminSessionsUnsubscribe = onSnapshot(sessionsCol, (snapshot) => {
+                const listEl = document.getElementById("sessions-list");
+                document.getElementById("session-count").textContent = snapshot.size;
+                listEl.innerHTML = "";
+                sessionsCache = {};
 
-        function unlockAstrologerDesk() {
-            if (adminPinInput.value.trim() !== ASTROLOGER_PIN) {
-                alert("Incorrect PIN. Default PIN is 3769.");
-                return;
-            }
-            adminPinModal.classList.add("hidden");
-            isAdmin = true;
+                if (snapshot.empty) {
+                    listEl.innerHTML = `<div class="p-4 text-xs text-slate-500 text-center">No client consultations yet.</div>`;
+                    return;
+                }
 
-            visitorSignupScreen.classList.add("hidden");
-            visitorChatScreen.classList.add("hidden");
-            astrologerDeskScreen.classList.remove("hidden");
-            toggleAdminModalBtn.classList.add("hidden");
-            logoutAdminBtn.classList.remove("hidden");
+                const items = [];
+                snapshot.forEach((docSnap) => {
+                    const data = docSnap.data();
+                    sessionsCache[docSnap.id] = data;
+                    const ts = data.lastUpdated && data.lastUpdated.toMillis ? data.lastUpdated.toMillis() : Date.now();
+                    items.push({ id: docSnap.id, data, ts });
+                });
 
-            startAdminSessionListener();
-        }
+                items.sort((a, b) => b.ts - a.ts);
 
-        document.getElementById("confirm-pin-btn").addEventListener("click", unlockAstrologerDesk);
-        adminPinInput.addEventListener("keypress", (e) => {
-            if (e.key === "Enter") unlockAstrologerDesk();
-        });
+                items.forEach(({ id, data }) => {
+                    const item = document.createElement("button");
+                    item.type = "button";
+                    const isSelected = id === activeAdminSessionId;
+                    item.className = `w-full text-left p-3.5 transition flex flex-col gap-1 cursor-pointer ${
+                        isSelected ? "bg-slate-800 border-l-4 border-amber-500" : "hover:bg-slate-800/60"
+                    }`;
 
-        logoutAdminBtn.addEventListener("click", () => {
-            isAdmin = false;
+                    const topRow = document.createElement("div");
+                    topRow.className = "flex justify-between items-center w-full";
+                    const nameSpan = document.createElement("span");
+                    nameSpan.className = "font-bold text-sm text-white truncate";
+                    nameSpan.textContent = data.clientName || "Visitor";
+                    topRow.appendChild(nameSpan);
+
+                    if (data.unreadByAstrologer) {
+                        const newBadge = document.createElement("span");
+                        newBadge.className = "text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded";
+                        newBadge.textContent = "NEW";
+                        topRow.appendChild(newBadge);
+                    }
+
+                    const birthDiv = document.createElement("div");
+                    birthDiv.className = "text-[11px] text-amber-400/90 truncate";
+                    birthDiv.textContent = data.birthDetails || "";
+
+                    const msgDiv = document.createElement("div");
+                    msgDiv.className = "text-xs text-slate-400 truncate";
+                    msgDiv.textContent = data.lastMessage || "";
+
+                    item.appendChild(topRow);
+                    item.appendChild(birthDiv);
+                    item.appendChild(msgDiv);
+                    item.addEventListener("click", () => selectAdminSession(id));
+                    listEl.appendChild(item);
+                });
+            }, handleFirestoreError);
+        };
+
+        window.stopAstrologerRealtime = function () {
             if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
             if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
-            astrologerDeskScreen.classList.add("hidden");
-            logoutAdminBtn.classList.add("hidden");
-            toggleAdminModalBtn.classList.remove("hidden");
+        };
 
-            if (visitorSessionId && visitorName) {
-                openVisitorChat(visitorSessionId, visitorName);
-            } else {
-                visitorSignupScreen.classList.remove("hidden");
+        // Restore admin desk if already unlocked in this tab
+        if (sessionStorage.getItem("nikita_astro_admin") === "true") {
+            document.getElementById("visitor-signup-screen").style.display = "none";
+            document.getElementById("visitor-chat-screen").style.display = "none";
+            document.getElementById("astrologer-desk-screen").style.display = "flex";
+            document.getElementById("toggle-admin-modal-btn").style.display = "none";
+            document.getElementById("logout-admin-btn").style.display = "inline-block";
+            window.initAstrologerRealtime();
+        }
+
+        async function selectAdminSession(sessionId) {
+            activeAdminSessionId = sessionId;
+            const info = sessionsCache[sessionId] || {};
+
+            document.getElementById("active-client-name").textContent = info.clientName || "Client";
+            document.getElementById("active-client-birth").textContent = `Birth Details: ${info.birthDetails || "Not provided"}`;
+            document.getElementById("delete-session-btn").style.display = "inline-block";
+
+            const replyInput = document.getElementById("admin-msg-input");
+            const sendBtn = document.getElementById("admin-send-btn");
+            replyInput.disabled = false;
+            sendBtn.disabled = false;
+            replyInput.placeholder = `Reply live to ${info.clientName || "client"}...`;
+            replyInput.focus();
+
+            if (info.unreadByAstrologer) {
+                try {
+                    await updateDoc(doc(db, "sessions", sessionId), { unreadByAstrologer: false });
+                } catch (e) { console.error(e); }
+            }
+
+            if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
+
+            const msgsRef = collection(db, "sessions", sessionId, "messages");
+            const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+            adminMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
+                const container = document.getElementById("admin-messages");
+                container.innerHTML = "";
+                snapshot.forEach((docSnap) => {
+                    const m = docSnap.data();
+                    const isAstrologer = m.senderRole === "astrologer";
+                    container.appendChild(
+                        createBubble(
+                            isAstrologer ? "Nikita" : (m.senderName || "Client"),
+                            m.text,
+                            isAstrologer,
+                            isAstrologer
+                        )
+                    );
+                });
+                container.scrollTop = container.scrollHeight;
+            }, handleFirestoreError);
+        }
+
+        document.getElementById("admin-reply-form").addEventListener("submit", async (e) => {
+            e.preventDefault();
+            const input = document.getElementById("admin-msg-input");
+            const text = input.value.trim();
+            if (!text || !activeAdminSessionId) return;
+
+            input.value = "";
+            try {
+                const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
+                await addDoc(msgsRef, {
+                    text,
+                    senderRole: "astrologer",
+                    senderName: "Nikita",
+                    createdAt: serverTimestamp()
+                });
+
+                await updateDoc(doc(db, "sessions", activeAdminSessionId), {
+                    lastMessage: `Nikita: ${text}`,
+                    lastUpdated: serverTimestamp(),
+                    unreadByAstrologer: false
+                });
+            } catch (err) {
+                handleFirestoreError(err);
             }
         });
 
-        function startAdminSessionListener() {
-            const q = query(sessionsCol, orderBy("lastUpdated", "desc"));
-            adminSessionsUnsubscribe = onSnapshot(q, (snapshot) =>
+        document.getElementById("delete-session-btn").addEventListener("click", async () => {
+            if (!activeAdminSessionId) return;
+            if (!confirm("Delete this consultation thread?")) return;
+            try {
+                await deleteDoc(doc(db, "sessions", activeAdminSessionId));
+                activeAdminSessionId = null;
+                document.getElementById("active-client-name").textContent = "Select a client on the left";
+                document.getElementById("active-client-birth").textContent = "Session deleted.";
+                document.getElementById("admin-messages").innerHTML = "";
+                document.getElementById("delete-session-btn").style.display = "none";
+                document.getElementById("admin-msg-input").disabled = true;
+                document.getElementById("admin-send-btn").disabled = true;
+            } catch (err) {
+                handleFirestoreError(err);
+            }
+        });
+    </script>
+</body>
+</html>
