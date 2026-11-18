@@ -53,10 +53,10 @@
         </div>
     </header>
 
-    <!-- Firestore Permission Warning Banner -->
+    <!-- Firestore Setup / Rules Warning Banner -->
     <div id="firebase-error-banner" style="display: none;" class="max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
-        <p class="font-bold text-amber-400 mb-1">⚠️ Database Write Blocked by Firebase Rules</p>
-        <p class="mb-2">Open your <strong>Firebase Console → Firestore Database → Rules</strong> tab, paste these rules, and click <strong>Publish</strong>:</p>
+        <p class="font-bold text-amber-400 mb-1">⚠️ Database Setup Needed in Firebase Console</p>
+        <p id="firebase-error-detail" class="mb-2">Open your <strong>Firebase Console → Build → Firestore Database</strong>, ensure the database is created, and set the <strong>Rules</strong> tab to:</p>
         <pre class="bg-slate-950 p-2 rounded text-xs text-emerald-400 overflow-x-auto">rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
@@ -94,7 +94,7 @@ service cloud.firestore {
             </div>
 
             <!-- Visitor Intake Form -->
-            <form id="visitor-signup-form" class="space-y-3">
+            <form id="visitor-signup-form" onsubmit="return handleVisitorFormSubmit(event)" class="space-y-3">
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Your Name *</label>
                     <input type="text" id="visitor-name" required placeholder="e.g., Aarav Sharma"
@@ -111,9 +111,10 @@ service cloud.firestore {
                               class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <button type="submit" id="start-session-btn"
-                        class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg">
+                        class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg cursor-pointer">
                     Enter Live Consultation Room
                 </button>
+                <p id="signup-status-msg" style="display: none;" class="text-xs text-center text-red-400 pt-1"></p>
             </form>
         </div>
 
@@ -126,7 +127,7 @@ service cloud.firestore {
                     <h2 class="text-lg text-amber-500">Private Consultation with Nikita</h2>
                     <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active • Nikita will reply here shortly</p>
                 </div>
-                <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition">
+                <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition cursor-pointer">
                     New / End Session
                 </button>
             </div>
@@ -136,7 +137,7 @@ service cloud.firestore {
             <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
                 <input type="text" id="visitor-msg-input" placeholder="Type your message to Nikita..."
                        class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500">
-                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-5 rounded-lg transition">
+                <button type="submit" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2 px-5 rounded-lg transition cursor-pointer">
                     Send
                 </button>
             </form>
@@ -165,7 +166,7 @@ service cloud.firestore {
                         <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
                         <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart details and reply live.</p>
                     </div>
-                    <button type="button" id="delete-session-btn" style="display: none;" class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded">
+                    <button type="button" id="delete-session-btn" style="display: none;" class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1 px-2.5 rounded cursor-pointer">
                         Delete Chat
                     </button>
                 </div>
@@ -178,7 +179,7 @@ service cloud.firestore {
                     <input type="text" id="admin-msg-input" disabled placeholder="Select a client first to reply..."
                            class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500 disabled:opacity-50">
                     <button type="submit" id="admin-send-btn" disabled
-                            class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white font-bold py-2 px-5 rounded-lg transition">
+                            class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white font-bold py-2 px-5 rounded-lg transition cursor-pointer">
                         Reply
                     </button>
                 </form>
@@ -187,12 +188,12 @@ service cloud.firestore {
 
     </main>
 
-    <!-- Astrologer PIN Modal -->
+    <!-- Astrologer PIN Modal (No PIN exposed in text) -->
     <div id="admin-pin-modal" style="display: none;" class="fixed inset-0 bg-black/80 items-center justify-center p-4 z-50">
         <div class="bg-slate-800 border border-amber-600 rounded-xl p-6 max-w-sm w-full shadow-2xl">
             <h3 class="text-lg text-amber-500 mb-2">Astrologer Access</h3>
-            <p class="text-xs text-slate-400 mb-4">Enter your Astrologer PIN to open your live client inbox and respond to visitors.</p>
-            <input type="password" id="admin-pin-input" placeholder="Enter PIN (3769)"
+            <p class="text-xs text-slate-400 mb-4">Authorized access only. Enter your private PIN to open the live consultation desk.</p>
+            <input type="password" id="admin-pin-input" placeholder="Enter your private PIN"
                    onkeydown="if(event.key==='Enter'){event.preventDefault();verifyPinAndOpenDesk();}"
                    class="w-full p-2.5 mb-4 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
             <div class="flex justify-end gap-2">
@@ -202,8 +203,9 @@ service cloud.firestore {
         </div>
     </div>
 
-    <!-- Immediate UI Navigation Script (Works Instantly Without Waiting on External CDNs) -->
+    <!-- Immediate UI & Form Guard Script -->
     <script>
+        // Change this PIN to whatever private passcode you prefer
         const ASTROLOGER_PIN = "3769";
 
         function openPinModal() {
@@ -221,7 +223,7 @@ service cloud.firestore {
         function verifyPinAndOpenDesk() {
             const entered = document.getElementById("admin-pin-input").value.trim();
             if (entered !== ASTROLOGER_PIN) {
-                alert("Incorrect PIN. Default PIN is 3769.");
+                alert("Incorrect PIN.");
                 return;
             }
             closePinModal();
@@ -256,7 +258,18 @@ service cloud.firestore {
             }
         }
 
-        // Auto-open PIN modal if URL ends with #astrologer
+        function handleVisitorFormSubmit(event) {
+            event.preventDefault();
+            if (window.submitVisitorSession) {
+                window.submitVisitorSession();
+            } else {
+                const statusEl = document.getElementById("signup-status-msg");
+                statusEl.textContent = "Still connecting to live database—please wait 2 seconds and click again.";
+                statusEl.style.display = "block";
+            }
+            return false;
+        }
+
         window.addEventListener("DOMContentLoaded", () => {
             if (window.location.hash === "#astrologer") {
                 openPinModal();
@@ -309,11 +322,21 @@ service cloud.firestore {
 
         function handleFirestoreError(err) {
             console.error("Firestore error:", err);
-            if (err && (err.code === "permission-denied" || String(err).includes("permission"))) {
-                errorBanner.style.display = "block";
-            } else {
-                alert("Database notice: " + err.message);
+            const statusEl = document.getElementById("signup-status-msg");
+            errorBanner.style.display = "block";
+            if (statusEl) {
+                statusEl.textContent = "Database error: " + (err.message || err.code || "Check Firestore setup above.");
+                statusEl.style.display = "block";
             }
+        }
+
+        function withTimeout(promise, ms = 10000) {
+            return Promise.race([
+                promise,
+                new Promise((_, reject) =>
+                    setTimeout(() => reject(new Error("Connection timed out. Please verify Firestore Database is created in Firebase Console.")), ms)
+                )
+            ]);
         }
 
         function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false) {
@@ -381,11 +404,13 @@ service cloud.firestore {
             openVisitorChat(visitorSessionId, visitorName);
         }
 
-        document.getElementById("visitor-signup-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
+        window.submitVisitorSession = async function () {
             const name = document.getElementById("visitor-name").value.trim();
             const birth = document.getElementById("visitor-birth").value.trim() || "Not provided";
             const topic = document.getElementById("visitor-topic").value.trim();
+            const statusEl = document.getElementById("signup-status-msg");
+            statusEl.style.display = "none";
+
             if (!name || !topic) return;
 
             const btn = document.getElementById("start-session-btn");
@@ -393,22 +418,22 @@ service cloud.firestore {
             btn.textContent = "Connecting to Live Room...";
 
             try {
-                const sessionDoc = await addDoc(sessionsCol, {
+                const sessionDoc = await withTimeout(addDoc(sessionsCol, {
                     clientName: name,
                     birthDetails: birth,
                     createdAt: serverTimestamp(),
                     lastUpdated: serverTimestamp(),
                     lastMessage: topic,
                     unreadByAstrologer: true
-                });
+                }));
 
                 const msgsRef = collection(db, "sessions", sessionDoc.id, "messages");
-                await addDoc(msgsRef, {
+                await withTimeout(addDoc(msgsRef, {
                     text: `Birth Details: ${birth}\n\nQuestion: ${topic}`,
                     senderRole: "client",
                     senderName: name,
                     createdAt: serverTimestamp()
-                });
+                }));
 
                 visitorSessionId = sessionDoc.id;
                 visitorName = name;
@@ -422,7 +447,7 @@ service cloud.firestore {
                 btn.disabled = false;
                 btn.textContent = "Enter Live Consultation Room";
             }
-        });
+        };
 
         document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
             e.preventDefault();
@@ -531,7 +556,6 @@ service cloud.firestore {
             if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
         };
 
-        // Restore admin desk if already unlocked in this tab
         if (sessionStorage.getItem("nikita_astro_admin") === "true") {
             document.getElementById("visitor-signup-screen").style.display = "none";
             document.getElementById("visitor-chat-screen").style.display = "none";
