@@ -139,6 +139,10 @@
                     <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active</p>
                 </div>
                 <div class="flex items-center gap-2">
+                    <a id="header-pay-link" href="#" target="_blank" rel="noopener noreferrer" style="display: none;"
+                       class="text-xs bg-emerald-700 hover:bg-emerald-600 text-white font-bold py-1.5 px-3 rounded transition">
+                        Pay Session Fee
+                    </a>
                     <button type="button" id="visitor-end-btn" class="text-xs bg-slate-800 hover:bg-red-900 text-slate-300 hover:text-white border border-slate-600 py-1.5 px-3 rounded transition cursor-pointer">
                         End Session
                     </button>
@@ -155,7 +159,7 @@
 
             <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
                 <input type="file" id="visitor-chat-file" accept="image/*" class="hidden">
-                <button type="button" onclick="document.getElementById('visitor-chat-file').click()" title="Attach Natal Chart or UPI Payment Screenshot"
+                <button type="button" onclick="document.getElementById('visitor-chat-file').click()" title="Attach Natal Chart or Payment Receipt"
                         class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-400 text-sm cursor-pointer transition">
                     📎
                 </button>
@@ -190,10 +194,16 @@
                         <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
                         <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart and reply live.</p>
                     </div>
-                    <div class="flex items-center gap-2">
+                    <div class="flex flex-wrap items-center gap-1.5">
+                        <button type="button" id="request-link-btn" style="display: none;"
+                                class="text-xs bg-amber-700 hover:bg-amber-600 text-white border border-amber-500 py-1.5 px-2.5 rounded font-semibold cursor-pointer transition"
+                                title="Send clickable payment link (Payhip, PayPal, Razorpay)">
+                            🔗 Payment Link
+                        </button>
                         <button type="button" id="request-upi-btn" style="display: none;"
-                                class="text-xs bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600 py-1.5 px-3 rounded font-semibold cursor-pointer transition">
-                            📲 Send UPI QR
+                                class="text-xs bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600 py-1.5 px-2.5 rounded font-semibold cursor-pointer transition"
+                                title="Send scannable UPI QR Code + Payment Link">
+                            📲 UPI QR + Link
                         </button>
                         <button type="button" id="delete-session-btn" style="display: none;"
                                 class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1.5 px-2.5 rounded cursor-pointer">
@@ -246,14 +256,14 @@
     <!-- Immediate UI, Melodic Audio Engine & Configuration -->
     <script>
         // ============================================================
-        // 🛑 CUSTOMIZE YOUR PIN, UPI ID & EMAIL KEY BELOW 🛑
+        // 🛑 CUSTOMIZE YOUR PIN, PAYMENT LINK, UPI & EMAIL KEY BELOW 🛑
         // ============================================================
         const ASTROLOGER_PIN = "3769";
-        const UPI_ID = "yourname@okicici";              // Replace with your real UPI ID (VPA)
-        const UPI_PAYEE_NAME = "Nikita Gharat";        // Name shown in GPay / PhonePe / Paytm
-        const DEFAULT_UPI_AMOUNT = "1500";             // Default ₹ amount pre-filled when requesting payment
-        const INTERNATIONAL_PAY_LINK = "";             // Optional: PayPal.me or Payhip URL for non-INR clients
-        const WEB3FORMS_ACCESS_KEY = "YOUR_WEB3FORMS_KEY"; // Free key from web3forms.com for email alerts
+        const DEFAULT_PAYMENT_LINK = "https://payhip.com/YOUR_STORE_LINK"; // Optional: replace with your Payhip/PayPal link
+        const UPI_ID = "yourname@okicici";                                 // Optional: replace with your real UPI ID
+        const UPI_PAYEE_NAME = "Nikita Gharat";                           // Name displayed in UPI apps
+        const DEFAULT_UPI_AMOUNT = "1500";                                // Default ₹ amount for UPI QR
+        const WEB3FORMS_ACCESS_KEY = "05318c3a-5a8a-4f5d-b259-a244665acaf8";
         const CONSULTATION_FEE_LABEL = "Live 1-on-1 Chart Consultation";
 
         // ============================================================
@@ -269,7 +279,6 @@
                 if (!audioCtx) audioCtx = new AudioContextClass();
                 if (audioCtx.state === "suspended") audioCtx.resume();
 
-                // Mystical D-Major / Lydian harp arpeggio notes (Hz)
                 const notes = [587.33, 739.99, 880.00, 1174.66, 1318.51];
                 const now = audioCtx.currentTime;
 
@@ -358,7 +367,6 @@
             closePinModal();
             sessionStorage.setItem("nikita_astro_admin", "true");
 
-            // Unlock Web Audio on login click and play chime
             playCelestialNotification();
 
             document.getElementById("visitor-signup-screen").style.display = "none";
@@ -411,6 +419,11 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("landing-rate-badge").textContent = CONSULTATION_FEE_LABEL;
+            if (DEFAULT_PAYMENT_LINK && !DEFAULT_PAYMENT_LINK.includes("YOUR_STORE_LINK")) {
+                const payBtn = document.getElementById("header-pay-link");
+                payBtn.href = DEFAULT_PAYMENT_LINK;
+                payBtn.style.display = "inline-block";
+            }
             if (window.location.hash === "#astrologer") {
                 openPinModal();
             }
@@ -512,7 +525,7 @@
             });
         }
 
-        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false, imageData = null, upiPayload = null) {
+        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false, imageData = null, upiPayload = null, paymentUrl = null) {
             const wrapper = document.createElement("div");
             wrapper.className = `max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
                 isRightSide
@@ -544,480 +557,10 @@
                 wrapper.appendChild(body);
             }
 
-            // Render Dynamic UPI QR Code Card if present
-            if (upiPayload && upiPayload.upiUri) {
-                const qrCard = document.createElement("div");
-                qrCard.className = "mt-3 bg-slate-900 border border-amber-500/60 rounded-xl p-3.5 text-center shadow-inner";
-
-                const title = document.createElement("div");
-                title.className = "text-xs font-bold text-amber-400 mb-2";
-                title.textContent = upiPayload.amount
-                    ? `Scan with GPay / PhonePe / Paytm (₹${upiPayload.amount})`
-                    : "Scan with Any UPI App to Pay";
-                qrCard.appendChild(title);
-
-                const qrContainer = document.createElement("div");
-                qrContainer.className = "qr-box bg-white p-2.5 rounded-lg inline-block mb-2";
-                qrCard.appendChild(qrContainer);
-
-                if (window.QRCode) {
-                    new QRCode(qrContainer, {
-                        text: upiPayload.upiUri,
-                        width: 170,
-                        height: 170,
-                        colorDark: "#0f172a",
-                        colorLight: "#ffffff",
-                        correctLevel: QRCode.CorrectLevel.M
-                    });
-                }
-
-                // Visible VPA & Payee Name per NPCI display guidance
-                const vpaLabel = document.createElement("div");
-                vpaLabel.className = "text-[11px] text-slate-300 font-mono mb-2 select-all";
-                vpaLabel.textContent = `UPI ID: ${upiPayload.upiId} (${upiPayload.payeeName})`;
-                qrCard.appendChild(vpaLabel);
-
-                // Mobile 1-tap UPI app button
-                const mobileBtn = document.createElement("a");
-                mobileBtn.href = upiPayload.upiUri;
-                mobileBtn.className = "block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2 px-3 rounded-lg transition mb-1.5";
-                mobileBtn.textContent = upiPayload.amount
-                    ? `Pay ₹${upiPayload.amount} via UPI App →`
-                    : "Open UPI App to Pay →";
-                qrCard.appendChild(mobileBtn);
-
-                if (upiPayload.intlUrl) {
-                    const intlBtn = document.createElement("a");
-                    intlBtn.href = upiPayload.intlUrl;
-                    intlBtn.target = "_blank";
-                    intlBtn.rel = "noopener noreferrer";
-                    intlBtn.className = "block w-full bg-slate-800 hover:bg-slate-700 text-amber-300 border border-slate-600 text-[11px] py-1.5 px-3 rounded-lg transition";
-                    intlBtn.textContent = "International Client? Pay via Card / PayPal →";
-                    qrCard.appendChild(intlBtn);
-                }
-
-                const hint = document.createElement("div");
-                hint.className = "text-[10px] text-slate-400 mt-1.5";
-                hint.textContent = "After paying, tap 📎 below to attach your payment screenshot.";
-                qrCard.appendChild(hint);
-
-                wrapper.appendChild(qrCard);
-            }
-
-            return wrapper;
-        }
-
-        // ==========================================
-        // VISITOR FLOW
-        // ==========================================
-        function openVisitorChat(sessionId, name) {
-            document.getElementById("visitor-signup-screen").style.display = "none";
-            document.getElementById("astrologer-desk-screen").style.display = "none";
-            document.getElementById("visitor-chat-screen").style.display = "flex";
-
-            document.getElementById("visitor-session-subtitle").textContent =
-                `Logged in as ${name} • Use 📎 to attach chart or payment receipt`;
-
-            if (visitorUnsubscribe) visitorUnsubscribe();
-
-            const msgsRef = collection(db, "sessions", sessionId, "messages");
-            const q = query(msgsRef, orderBy("createdAt", "asc"));
-
-            visitorUnsubscribe = onSnapshot(q, (snapshot) => {
-                const container = document.getElementById("visitor-messages");
-                container.innerHTML = "";
-                if (snapshot.empty) {
-                    container.innerHTML = `<div class="text-center text-xs text-slate-400 my-4">Your private room is open. Nikita will respond shortly.</div>`;
-                }
-                snapshot.forEach((docSnap) => {
-                    const m = docSnap.data();
-                    const isClient = m.senderRole === "client";
-                    container.appendChild(
-                        createBubble(
-                            isClient ? m.senderName : "Nikita",
-                            m.text,
-                            isClient,
-                            !isClient,
-                            m.imageData || null,
-                            m.upiPayload || null
-                        )
-                    );
-                });
-                container.scrollTop = container.scrollHeight;
-            }, handleFirestoreError);
-        }
-
-        if (visitorSessionId && visitorName && sessionStorage.getItem("nikita_astro_admin") !== "true") {
-            openVisitorChat(visitorSessionId, visitorName);
-        }
-
-        window.submitVisitorSession = async function () {
-            const name = document.getElementById("visitor-name").value.trim();
-            const birth = document.getElementById("visitor-birth").value.trim() || "Not provided";
-            const topic = document.getElementById("visitor-topic").value.trim();
-            const chartFile = document.getElementById("signup-chart-file").files[0];
-            const statusEl = document.getElementById("signup-status-msg");
-            statusEl.style.display = "none";
-
-            if (!name || !topic) return;
-
-            const btn = document.getElementById("start-session-btn");
-            btn.disabled = true;
-            btn.textContent = chartFile ? "Compressing Chart & Connecting..." : "Connecting to Live Room...";
-
-            try {
-                const compressedChart = await compressImageFile(chartFile);
-
-                const sessionDoc = await addDoc(sessionsCol, {
-                    clientName: name,
-                    birthDetails: birth,
-                    hasChart: Boolean(compressedChart),
-                    createdAt: serverTimestamp(),
-                    lastUpdated: serverTimestamp(),
-                    lastMessage: compressedChart ? `📊 [Chart Attached] ${topic}` : topic,
-                    unreadByAstrologer: true
-                });
-
-                const msgsRef = collection(db, "sessions", sessionDoc.id, "messages");
-                await addDoc(msgsRef, {
-                    text: `Birth Details: ${birth}\n\nQuestion: ${topic}`,
-                    imageData: compressedChart || null,
-                    senderRole: "client",
-                    senderName: name,
-                    createdAt: serverTimestamp()
-                });
-
-                visitorSessionId = sessionDoc.id;
-                visitorName = name;
-                visitorBirth = birth;
-                localStorage.setItem("astro_visitor_session_id", visitorSessionId);
-                localStorage.setItem("astro_visitor_name", visitorName);
-                localStorage.setItem("astro_visitor_birth", visitorBirth);
-
-                // Trigger Email Notification to Nikita for new consultation
-                sendEmailNotification(
-                    `New Astrology Consultation: ${name}`,
-                    name,
-                    birth,
-                    topic
-                );
-
-                openVisitorChat(visitorSessionId, visitorName);
-            } catch (err) {
-                handleFirestoreError(err);
-            } finally {
-                btn.disabled = false;
-                btn.textContent = "Enter Live Consultation Room";
-            }
-        };
-
-        document.getElementById("visitor-chat-file").addEventListener("change", async (e) => {
-            const file = e.target.files[0];
-            if (!file) return;
-            try {
-                pendingChatImageBase64 = await compressImageFile(file);
-                document.getElementById("visitor-image-filename").textContent = `📊 Ready to send: ${file.name}`;
-                document.getElementById("visitor-image-preview-bar").style.display = "flex";
-            } catch (err) {
-                alert(err.message);
-                e.target.value = "";
-            }
-        });
-
-        window.clearVisitorChatImage = function () {
-            pendingChatImageBase64 = null;
-            document.getElementById("visitor-chat-file").value = "";
-            document.getElementById("visitor-image-preview-bar").style.display = "none";
-        };
-
-        document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const input = document.getElementById("visitor-msg-input");
-            const text = input.value.trim();
-            if ((!text && !pendingChatImageBase64) || !visitorSessionId) return;
-
-            const imageToSend = pendingChatImageBase64;
-            input.value = "";
-            window.clearVisitorChatImage();
-
-            try {
-                const msgsRef = collection(db, "sessions", visitorSessionId, "messages");
-                await addDoc(msgsRef, {
-                    text: text || "Attached image",
-                    imageData: imageToSend || null,
-                    senderRole: "client",
-                    senderName: visitorName,
-                    createdAt: serverTimestamp()
-                });
-
-                await updateDoc(doc(db, "sessions", visitorSessionId), {
-                    lastMessage: imageToSend ? `📎 [Image] ${text || "Chart / Receipt"}` : text,
-                    lastUpdated: serverTimestamp(),
-                    unreadByAstrologer: true
-                });
-            } catch (err) {
-                handleFirestoreError(err);
-            }
-        });
-
-        document.getElementById("visitor-end-btn").addEventListener("click", () => {
-            if (visitorUnsubscribe) visitorUnsubscribe();
-            localStorage.removeItem("astro_visitor_session_id");
-            localStorage.removeItem("astro_visitor_name");
-            localStorage.removeItem("astro_visitor_birth");
-            visitorSessionId = null;
-            visitorName = "";
-            document.getElementById("visitor-chat-screen").style.display = "none";
-            document.getElementById("visitor-signup-screen").style.display = "block";
-        });
-
-        // ==========================================
-        // ASTROLOGER REALTIME INBOX, MUSIC & UPI QR
-        // ==========================================
-        window.initAstrologerRealtime = function () {
-            if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
-            isInitialAdminSnapshot = true;
-
-            adminSessionsUnsubscribe = onSnapshot(sessionsCol, (snapshot) => {
-                const listEl = document.getElementById("sessions-list");
-                document.getElementById("session-count").textContent = snapshot.size;
-                listEl.innerHTML = "";
-                sessionsCache = {};
-
-                if (snapshot.empty) {
-                    listEl.innerHTML = `<div class="p-4 text-xs text-slate-500 text-center">No client consultations yet.</div>`;
-                    isInitialAdminSnapshot = false;
-                    return;
-                }
-
-                const items = [];
-                let shouldChime = false;
-
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    sessionsCache[docSnap.id] = data;
-                    const ts = data.lastUpdated && data.lastUpdated.toMillis ? data.lastUpdated.toMillis() : Date.now();
-                    items.push({ id: docSnap.id, data, ts });
-
-                    // Play celestial chime when a new unread client message arrives after initial load
-                    const prevTs = lastKnownTimestamps[docSnap.id] || 0;
-                    if (!isInitialAdminSnapshot && data.unreadByAstrologer && ts > prevTs) {
-                        shouldChime = true;
-                    }
-                    lastKnownTimestamps[docSnap.id] = ts;
-                });
-
-                if (shouldChime) {
-                    playCelestialNotification();
-                }
-                isInitialAdminSnapshot = false;
-
-                items.sort((a, b) => b.ts - a.ts);
-
-                items.forEach(({ id, data }) => {
-                    const item = document.createElement("button");
-                    item.type = "button";
-                    const isSelected = id === activeAdminSessionId;
-                    item.className = `w-full text-left p-3.5 transition flex flex-col gap-1 cursor-pointer ${
-                        isSelected ? "bg-slate-800 border-l-4 border-amber-500" : "hover:bg-slate-800/60"
-                    }`;
-
-                    const topRow = document.createElement("div");
-                    topRow.className = "flex justify-between items-center w-full gap-1";
-                    const nameSpan = document.createElement("span");
-                    nameSpan.className = "font-bold text-sm text-white truncate";
-                    nameSpan.textContent = (data.hasChart ? "📊 " : "") + (data.clientName || "Visitor");
-                    topRow.appendChild(nameSpan);
-
-                    if (data.unreadByAstrologer) {
-                        const newBadge = document.createElement("span");
-                        newBadge.className = "text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded shrink-0";
-                        newBadge.textContent = "NEW";
-                        topRow.appendChild(newBadge);
-                    }
-
-                    const birthDiv = document.createElement("div");
-                    birthDiv.className = "text-[11px] text-amber-400/90 truncate";
-                    birthDiv.textContent = data.birthDetails || "";
-
-                    const msgDiv = document.createElement("div");
-                    msgDiv.className = "text-xs text-slate-400 truncate";
-                    msgDiv.textContent = data.lastMessage || "";
-
-                    item.appendChild(topRow);
-                    item.appendChild(birthDiv);
-                    item.appendChild(msgDiv);
-                    item.addEventListener("click", () => selectAdminSession(id));
-                    listEl.appendChild(item);
-                });
-            }, handleFirestoreError);
-        };
-
-        window.stopAstrologerRealtime = function () {
-            if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
-            if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
-        };
-
-        if (sessionStorage.getItem("nikita_astro_admin") === "true") {
-            document.getElementById("visitor-signup-screen").style.display = "none";
-            document.getElementById("visitor-chat-screen").style.display = "none";
-            document.getElementById("astrologer-desk-screen").style.display = "flex";
-            document.getElementById("toggle-admin-modal-btn").style.display = "none";
-            document.getElementById("logout-admin-btn").style.display = "inline-block";
-            document.getElementById("sound-toggle-btn").style.display = "inline-block";
-            window.initAstrologerRealtime();
-        }
-
-        async function selectAdminSession(sessionId) {
-            activeAdminSessionId = sessionId;
-            const info = sessionsCache[sessionId] || {};
-
-            document.getElementById("active-client-name").textContent = info.clientName || "Client";
-            document.getElementById("active-client-birth").textContent = `Birth Details: ${info.birthDetails || "Not provided"}`;
-            document.getElementById("request-upi-btn").style.display = "inline-block";
-            document.getElementById("delete-session-btn").style.display = "inline-block";
-
-            const replyInput = document.getElementById("admin-msg-input");
-            const sendBtn = document.getElementById("admin-send-btn");
-            replyInput.disabled = false;
-            sendBtn.disabled = false;
-            replyInput.placeholder = `Reply live to ${info.clientName || "client"}...`;
-            replyInput.focus();
-
-            if (info.unreadByAstrologer) {
-                try {
-                    await updateDoc(doc(db, "sessions", sessionId), { unreadByAstrologer: false });
-                } catch (e) { console.error(e); }
-            }
-
-            if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
-
-            const msgsRef = collection(db, "sessions", sessionId, "messages");
-            const q = query(msgsRef, orderBy("createdAt", "asc"));
-
-            adminMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
-                const container = document.getElementById("admin-messages");
-                container.innerHTML = "";
-                snapshot.forEach((docSnap) => {
-                    const m = docSnap.data();
-                    const isAstrologer = m.senderRole === "astrologer";
-                    container.appendChild(
-                        createBubble(
-                            isAstrologer ? "Nikita" : (m.senderName || "Client"),
-                            m.text,
-                            isAstrologer,
-                            isAstrologer,
-                            m.imageData || null,
-                            m.upiPayload || null
-                        )
-                    );
-                });
-                container.scrollTop = container.scrollHeight;
-            }, handleFirestoreError);
-        }
-
-        // Send Dynamic UPI QR Code Payment Card
-        document.getElementById("request-upi-btn").addEventListener("click", async () => {
-            if (!activeAdminSessionId) return;
-
-            let activeUpiId = UPI_ID;
-            if (!activeUpiId || activeUpiId === "yourname@okicici") {
-                activeUpiId = prompt("Enter your UPI ID (e.g., name@okhdfcbank):");
-                if (!activeUpiId || !activeUpiId.trim()) return;
-                activeUpiId = activeUpiId.trim();
-            }
-
-            const amountInput = prompt("Enter consultation fee in INR (₹) — or leave blank so client enters amount:", DEFAULT_UPI_AMOUNT);
-            if (amountInput === null) return;
-            const cleanAmount = amountInput.trim().replace(/[^0-9.]/g, "");
-
-            const noteInput = prompt(
-                "Message to show with the QR code:",
-                "To proceed with your detailed D1 & D9 chart reading, please scan the UPI QR code below and attach your payment receipt here."
-            );
-            if (noteInput === null) return;
-
-            // Build standard NPCI upi://pay URI
-            const params = new URLSearchParams({
-                pa: activeUpiId,
-                pn: UPI_PAYEE_NAME,
-                cu: "INR",
-                tn: "Astrology Consultation"
-            });
-            if (cleanAmount) {
-                params.set("am", Number(cleanAmount).toFixed(2));
-            }
-            const upiUri = `upi://pay?${params.toString()}`;
-
-            try {
-                const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
-                await addDoc(msgsRef, {
-                    text: noteInput.trim() || "Please scan the UPI QR code below to complete your consultation payment:",
-                    upiPayload: {
-                        upiUri,
-                        upiId: activeUpiId,
-                        payeeName: UPI_PAYEE_NAME,
-                        amount: cleanAmount || "",
-                        intlUrl: INTERNATIONAL_PAY_LINK || ""
-                    },
-                    senderRole: "astrologer",
-                    senderName: "Nikita",
-                    createdAt: serverTimestamp()
-                });
-
-                await updateDoc(doc(db, "sessions", activeAdminSessionId), {
-                    lastMessage: cleanAmount ? `📲 UPI QR sent (₹${cleanAmount})` : "📲 UPI QR sent",
-                    lastUpdated: serverTimestamp(),
-                    unreadByAstrologer: false
-                });
-            } catch (err) {
-                handleFirestoreError(err);
-            }
-        });
-
-        document.getElementById("admin-reply-form").addEventListener("submit", async (e) => {
-            e.preventDefault();
-            const input = document.getElementById("admin-msg-input");
-            const text = input.value.trim();
-            if (!text || !activeAdminSessionId) return;
-
-            input.value = "";
-            try {
-                const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
-                await addDoc(msgsRef, {
-                    text,
-                    senderRole: "astrologer",
-                    senderName: "Nikita",
-                    createdAt: serverTimestamp()
-                });
-
-                await updateDoc(doc(db, "sessions", activeAdminSessionId), {
-                    lastMessage: `Nikita: ${text}`,
-                    lastUpdated: serverTimestamp(),
-                    unreadByAstrologer: false
-                });
-            } catch (err) {
-                handleFirestoreError(err);
-            }
-        });
-
-        document.getElementById("delete-session-btn").addEventListener("click", async () => {
-            if (!activeAdminSessionId) return;
-            if (!confirm("Delete this consultation thread?")) return;
-            try {
-                await deleteDoc(doc(db, "sessions", activeAdminSessionId));
-                activeAdminSessionId = null;
-                document.getElementById("active-client-name").textContent = "Select a client on the left";
-                document.getElementById("active-client-birth").textContent = "Session deleted.";
-                document.getElementById("admin-messages").innerHTML = "";
-                document.getElementById("request-upi-btn").style.display = "none";
-                document.getElementById("delete-session-btn").style.display = "none";
-                document.getElementById("admin-msg-input").disabled = true;
-                document.getElementById("admin-send-btn").disabled = true;
-            } catch (err) {
-                handleFirestoreError(err);
-            }
-        });
-    </script>
-</body>
-</html>
+            // Option A: Standalone Clickable Payment Link Card (Payhip / PayPal / Razorpay / Card)
+            if (paymentUrl) {
+                const payLinkCard = document.createElement("div");
+                payLinkCard.className = "mt-2.5 bg-slate-900/90 border border-emerald-500/60 rounded-lg p-3 text-center";
+
+                const linkBtn = document.createElement("a");
+                linkBtn.href
