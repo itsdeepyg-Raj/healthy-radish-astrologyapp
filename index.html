@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0">
     <title>Nikita's Live Astrology Consultations</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- QRCode.js for instant client-side UPI QR generation -->
@@ -40,11 +40,11 @@
 <body class="min-h-screen flex flex-col">
 
     <!-- Top Navigation Bar (Transparent Header Text Background) -->
-    <header class="w-full max-w-5xl mx-auto px-4 py-4 flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 bg-transparent">
+    <header class="w-full max-w-5xl mx-auto px-4 py-3.5 flex flex-wrap justify-between items-center gap-2 border-b border-slate-800 bg-transparent">
         <div class="bg-transparent">
-            <span class="text-amber-500 font-bold tracking-wider text-lg bg-transparent" style="font-family: 'Cinzel', serif;">NIKITA ASTROLOGY</span>
+            <span class="text-amber-500 font-bold tracking-wider text-base sm:text-lg bg-transparent" style="font-family: 'Cinzel', serif;">NIKITA ASTROLOGY</span>
         </div>
-        <div class="flex items-center gap-2 sm:gap-3">
+        <div class="flex flex-wrap items-center gap-2">
             <span id="connection-badge" class="text-xs px-2.5 py-1 rounded-full bg-slate-800 text-amber-400 border border-slate-700">
                 Connecting...
             </span>
@@ -65,18 +65,18 @@
     </header>
 
     <!-- Firestore Warning Banner -->
-    <div id="firebase-error-banner" style="display: none;" class="max-w-3xl mx-auto mt-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
+    <div id="firebase-error-banner" style="display: none;" class="max-w-3xl mx-auto mt-4 mx-4 p-4 bg-red-950/90 border border-red-500 rounded-lg text-sm text-red-100">
         <p class="font-bold text-amber-400 mb-1">⚠️ Database Notice</p>
         <p id="firebase-error-detail">Check your <strong>Firebase Console → Build → Firestore Database → Rules</strong> tab.</p>
     </div>
 
     <!-- Main Container -->
-    <main class="flex-1 flex flex-col items-center justify-center p-4 w-full max-w-5xl mx-auto">
+    <main class="flex-1 flex flex-col items-center justify-center p-3 sm:p-4 w-full max-w-5xl mx-auto">
 
         <!-- ========================================== -->
         <!-- 1. VISITOR SIGN-UP & LANDING SCREEN        -->
         <!-- ========================================== -->
-        <div id="visitor-signup-screen" class="max-w-lg w-full bg-slate-800/90 p-7 rounded-xl mystic-border">
+        <div id="visitor-signup-screen" class="max-w-lg w-full bg-slate-800/90 p-5 sm:p-7 rounded-xl mystic-border">
             <div class="text-center mb-5 bg-transparent">
                 <h1 class="text-2xl sm:text-3xl text-amber-500 mb-1 bg-transparent">Live Astrological Consultations</h1>
                 <p class="text-sm text-slate-400 italic bg-transparent">Private 1-on-1 Chart Readings & Cosmic Guidance</p>
@@ -104,12 +104,12 @@
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Your Name *</label>
                     <input type="text" id="visitor-name" required placeholder="e.g., Aarav Sharma"
-                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Birth Details (Date, Time & City)</label>
                     <input type="text" id="visitor-birth" placeholder="e.g., 14 Aug 1994, 06:45 PM, Mumbai"
-                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
                 </div>
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Attach Natal Chart Screenshot (Optional — D1 / D9 image)</label>
@@ -119,7 +119,7 @@
                 <div>
                     <label class="block text-xs text-slate-300 mb-1">Your Question / Consultation Topic *</label>
                     <textarea id="visitor-topic" rows="2" required placeholder="What would you like guidance on today?"
-                              class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500"></textarea>
+                              class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500"></textarea>
                 </div>
                 <button type="submit" id="start-session-btn"
                         class="w-full bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-4 rounded-lg transition duration-200 shadow-lg cursor-pointer">
@@ -132,8 +132,8 @@
         <!-- ========================================== -->
         <!-- 2. VISITOR PRIVATE 1-ON-1 CHAT SCREEN      -->
         <!-- ========================================== -->
-        <div id="visitor-chat-screen" style="display: none;" class="max-w-2xl w-full h-[82vh] flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
-            <div class="bg-slate-900 p-3.5 border-b border-amber-600/60 flex justify-between items-center gap-2">
+        <div id="visitor-chat-screen" style="display: none;" class="max-w-2xl w-full min-h-[78vh] h-[82vh] flex-col bg-slate-800 rounded-xl mystic-border overflow-hidden">
+            <div class="bg-slate-900 p-3 sm:p-3.5 border-b border-amber-600/60 flex flex-wrap justify-between items-center gap-2">
                 <div>
                     <h2 class="text-base sm:text-lg text-amber-500">Private Consultation with Nikita</h2>
                     <p id="visitor-session-subtitle" class="text-xs text-slate-400">Live room active</p>
@@ -149,23 +149,23 @@
                 </div>
             </div>
 
-            <div id="visitor-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3"></div>
+            <div id="visitor-messages" class="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col space-y-3"></div>
 
             <!-- Selected Image Preview Bar for Visitor -->
             <div id="visitor-image-preview-bar" style="display: none;" class="px-4 py-2 bg-slate-950 border-t border-slate-800 flex items-center justify-between text-xs text-amber-400">
-                <span id="visitor-image-filename">Image ready to send</span>
-                <button type="button" onclick="clearVisitorChatImage()" class="text-red-400 hover:text-red-300 font-bold cursor-pointer">✕ Remove</button>
+                <span id="visitor-image-filename" class="truncate pr-2">Image ready to send</span>
+                <button type="button" onclick="clearVisitorChatImage()" class="text-red-400 hover:text-red-300 font-bold cursor-pointer shrink-0">✕ Remove</button>
             </div>
 
-            <form id="visitor-chat-form" class="p-3 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
+            <form id="visitor-chat-form" class="p-2.5 sm:p-3 bg-slate-900 border-t border-slate-700 flex items-center gap-2">
                 <input type="file" id="visitor-chat-file" accept="image/*" class="hidden">
                 <button type="button" onclick="document.getElementById('visitor-chat-file').click()" title="Attach Natal Chart or Payment Receipt"
-                        class="p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-400 text-sm cursor-pointer transition">
+                        class="p-2.5 sm:p-3 rounded-lg bg-slate-800 hover:bg-slate-700 border border-slate-600 text-amber-400 text-base cursor-pointer transition shrink-0">
                     📎
                 </button>
-                <input type="text" id="visitor-msg-input" placeholder="Type message or attach chart / payment receipt..."
-                       class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500">
-                <button type="submit" id="visitor-send-btn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-3 px-5 rounded-lg transition cursor-pointer">
+                <input type="text" id="visitor-msg-input" placeholder="Message or attach chart / receipt..."
+                       class="flex-1 min-w-0 p-2.5 sm:p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
+                <button type="submit" id="visitor-send-btn" class="bg-amber-600 hover:bg-amber-500 text-white font-bold py-2.5 sm:py-3 px-4 sm:px-5 rounded-lg transition cursor-pointer shrink-0">
                     Send
                 </button>
             </form>
@@ -174,10 +174,10 @@
         <!-- ========================================== -->
         <!-- 3. ASTROLOGER LIVE DESK (NIKITA'S VIEW)    -->
         <!-- ========================================== -->
-        <div id="astrologer-desk-screen" style="display: none;" class="w-full h-[82vh] bg-slate-800 rounded-xl mystic-border overflow-hidden flex-col md:flex-row">
+        <div id="astrologer-desk-screen" style="display: none;" class="w-full min-h-[82vh] md:h-[82vh] bg-slate-800 rounded-xl mystic-border overflow-hidden flex-col md:flex-row">
             
             <!-- Left Sidebar: Incoming Visitor Queue -->
-            <div class="w-full md:w-1/3 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col h-1/3 md:h-full">
+            <div class="w-full md:w-1/3 bg-slate-900 border-b md:border-b-0 md:border-r border-slate-700 flex flex-col max-h-60 md:max-h-none md:h-full">
                 <div class="p-3.5 border-b border-slate-800 flex justify-between items-center">
                     <h2 class="text-sm font-bold text-amber-500 tracking-wide">CLIENT CONSULTATIONS</h2>
                     <span id="session-count" class="text-xs bg-slate-800 text-slate-300 px-2 py-0.5 rounded-full">0</span>
@@ -188,39 +188,39 @@
             </div>
 
             <!-- Right Panel: Active 1-on-1 Client Chat -->
-            <div class="w-full md:w-2/3 flex flex-col h-2/3 md:h-full bg-slate-800">
+            <div class="w-full md:w-2/3 flex flex-col flex-1 min-h-[55vh] md:h-full bg-slate-800">
                 <div id="admin-chat-header" class="bg-slate-900/90 p-3.5 border-b border-amber-600/40 flex flex-wrap justify-between items-center gap-2">
-                    <div>
-                        <h3 id="active-client-name" class="text-base text-amber-400 font-bold">Select a client on the left</h3>
-                        <p id="active-client-birth" class="text-xs text-slate-400">Click any visitor session to view their chart and reply live.</p>
+                    <div class="min-w-0">
+                        <h3 id="active-client-name" class="text-base text-amber-400 font-bold truncate">Select a client above / left</h3>
+                        <p id="active-client-birth" class="text-xs text-slate-400">Tap any visitor session to view their chart, reply, or request payment.</p>
                     </div>
                     <div class="flex flex-wrap items-center gap-1.5">
                         <button type="button" id="request-link-btn" style="display: none;"
-                                class="text-xs bg-amber-700 hover:bg-amber-600 text-white border border-amber-500 py-1.5 px-2.5 rounded font-semibold cursor-pointer transition"
+                                class="text-xs bg-amber-700 hover:bg-amber-600 text-white border border-amber-500 py-2 px-3 rounded font-semibold cursor-pointer transition"
                                 title="Send clickable payment link (Payhip, PayPal, Razorpay)">
                             🔗 Payment Link
                         </button>
                         <button type="button" id="request-upi-btn" style="display: none;"
-                                class="text-xs bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600 py-1.5 px-2.5 rounded font-semibold cursor-pointer transition"
+                                class="text-xs bg-emerald-800 hover:bg-emerald-700 text-emerald-100 border border-emerald-600 py-2 px-3 rounded font-semibold cursor-pointer transition"
                                 title="Send scannable UPI QR Code + Payment Link">
                             📲 UPI QR + Link
                         </button>
                         <button type="button" id="delete-session-btn" style="display: none;"
-                                class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-1.5 px-2.5 rounded cursor-pointer">
+                                class="text-xs bg-red-950 hover:bg-red-800 text-red-300 border border-red-800/70 py-2 px-2.5 rounded cursor-pointer">
                             Delete
                         </button>
                     </div>
                 </div>
 
-                <div id="admin-messages" class="flex-1 p-4 overflow-y-auto flex flex-col space-y-3">
+                <div id="admin-messages" class="flex-1 p-3 sm:p-4 overflow-y-auto flex flex-col space-y-3 min-h-[260px]">
                     <div class="text-center text-xs text-slate-500 my-auto">Your 2-way consultation messages and client charts will appear here.</div>
                 </div>
 
-                <form id="admin-reply-form" class="p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
+                <form id="admin-reply-form" class="p-2.5 sm:p-3 bg-slate-900 border-t border-slate-700 flex gap-2">
                     <input type="text" id="admin-msg-input" disabled placeholder="Select a client first to reply..."
-                           class="flex-1 p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-sm focus:outline-none focus:border-amber-500 disabled:opacity-50">
+                           class="flex-1 min-w-0 p-2.5 sm:p-3 rounded-lg bg-slate-800 border border-slate-600 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500 disabled:opacity-50">
                     <button type="submit" id="admin-send-btn" disabled
-                            class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white font-bold py-2 px-5 rounded-lg transition cursor-pointer">
+                            class="bg-amber-600 hover:bg-amber-500 disabled:bg-slate-700 text-white font-bold py-2.5 px-4 sm:px-5 rounded-lg transition cursor-pointer shrink-0">
                         Reply
                     </button>
                 </form>
@@ -234,7 +234,46 @@
          class="fixed inset-0 bg-black/90 items-center justify-center p-4 z-50 cursor-zoom-out">
         <div class="max-w-4xl max-h-[92vh] flex flex-col items-center">
             <img id="zoomed-chart-img" src="" alt="Natal Chart Full View" class="max-w-full max-h-[85vh] rounded-lg border border-amber-500 shadow-2xl">
-            <span class="text-xs text-slate-300 mt-2">Click anywhere to close</span>
+            <span class="text-xs text-slate-300 mt-2">Tap anywhere to close</span>
+        </div>
+    </div>
+
+    <!-- Mobile-Safe Payment Request Modal (Works on all mobile & in-app browsers) -->
+    <div id="payment-request-modal" style="display: none;" class="fixed inset-0 bg-black/80 items-center justify-center p-4 z-50 overflow-y-auto">
+        <div class="bg-slate-800 border border-amber-600 rounded-xl p-5 max-w-md w-full shadow-2xl space-y-3 my-auto">
+            <h3 id="pay-modal-title" class="text-lg text-amber-500 font-bold">Send Payment Request</h3>
+
+            <div id="pay-modal-upi-fields" class="space-y-3">
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Your UPI ID (VPA) *</label>
+                    <input type="text" id="modal-upi-id" placeholder="e.g., nikita@okicici"
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
+                </div>
+                <div>
+                    <label class="block text-xs text-slate-300 mb-1">Consultation Fee in INR (₹) — Optional</label>
+                    <input type="number" id="modal-upi-amount" placeholder="e.g., 1500"
+                           class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
+                </div>
+            </div>
+
+            <div>
+                <label id="modal-link-label" class="block text-xs text-slate-300 mb-1">Payment Link (Payhip / PayPal / Razorpay)</label>
+                <input type="url" id="modal-payment-link" placeholder="https://payhip.com/..."
+                       class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
+            </div>
+
+            <div>
+                <label class="block text-xs text-slate-300 mb-1">Message to Client</label>
+                <textarea id="modal-payment-note" rows="3"
+                          class="w-full p-2.5 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">To proceed with your detailed D1 & D9 chart reading, please complete the consultation payment below and attach your receipt screenshot here.</textarea>
+            </div>
+
+            <div class="flex justify-end gap-2 pt-1">
+                <button type="button" onclick="closePaymentModal()" class="text-xs text-slate-400 hover:text-white px-3 py-2.5 cursor-pointer">Cancel</button>
+                <button type="button" id="confirm-send-payment-btn" class="text-xs bg-emerald-600 hover:bg-emerald-500 text-white font-bold px-4 py-2.5 rounded cursor-pointer">
+                    Send to Client
+                </button>
+            </div>
         </div>
     </div>
 
@@ -243,9 +282,9 @@
         <div class="bg-slate-800 border border-amber-600 rounded-xl p-6 max-w-sm w-full shadow-2xl">
             <h3 class="text-lg text-amber-500 mb-2">Astrologer Access</h3>
             <p class="text-xs text-slate-400 mb-4">Authorized access only. Enter your private PIN to open the live consultation desk.</p>
-            <input type="password" id="admin-pin-input" placeholder="Enter your private PIN"
+            <input type="password" id="admin-pin-input" inputmode="numeric" placeholder="Enter your private PIN"
                    onkeydown="if(event.key==='Enter'){event.preventDefault();verifyPinAndOpenDesk();}"
-                   class="w-full p-2.5 mb-4 rounded bg-slate-900 border border-slate-700 text-white text-sm focus:outline-none focus:border-amber-500">
+                   class="w-full p-2.5 mb-4 rounded bg-slate-900 border border-slate-700 text-white text-base sm:text-sm focus:outline-none focus:border-amber-500">
             <div class="flex justify-end gap-2">
                 <button type="button" onclick="closePinModal()" class="text-xs text-slate-400 hover:text-white px-3 py-2 cursor-pointer">Cancel</button>
                 <button type="button" onclick="verifyPinAndOpenDesk()" class="text-xs bg-amber-600 hover:bg-amber-500 text-white font-bold px-4 py-2 rounded cursor-pointer">Open Desk</button>
@@ -256,7 +295,7 @@
     <!-- Immediate UI, Melodic Audio Engine & Configuration -->
     <script>
         // ============================================================
-        // 🛑 CUSTOMIZE YOUR PIN, PAYMENT LINK, UPI & EMAIL KEY BELOW 🛑
+        // 🛑 CONFIGURATION (EMAIL ALERTS ACTIVE) 🛑
         // ============================================================
         const ASTROLOGER_PIN = "3769";
         const DEFAULT_PAYMENT_LINK = "https://payhip.com/YOUR_STORE_LINK"; // Optional: replace with your Payhip/PayPal link
@@ -411,7 +450,7 @@
                 window.submitVisitorSession();
             } else {
                 const statusEl = document.getElementById("signup-status-msg");
-                statusEl.textContent = "Still connecting to live database—please wait 2 seconds and click again.";
+                statusEl.textContent = "Still connecting to live database—please check your network or refresh the page.";
                 statusEl.style.display = "block";
             }
             return false;
@@ -419,9 +458,10 @@
 
         window.addEventListener("DOMContentLoaded", () => {
             document.getElementById("landing-rate-badge").textContent = CONSULTATION_FEE_LABEL;
-            if (DEFAULT_PAYMENT_LINK && !DEFAULT_PAYMENT_LINK.includes("YOUR_STORE_LINK")) {
+            const savedLink = localStorage.getItem("nikita_saved_pay_link") || DEFAULT_PAYMENT_LINK;
+            if (savedLink && !savedLink.includes("YOUR_STORE_LINK")) {
                 const payBtn = document.getElementById("header-pay-link");
-                payBtn.href = DEFAULT_PAYMENT_LINK;
+                payBtn.href = savedLink;
                 payBtn.style.display = "inline-block";
             }
             if (window.location.hash === "#astrologer") {
@@ -430,13 +470,24 @@
         });
     </script>
 
-    <!-- Firebase Modular SDK for Live 2-Way Sync -->
+    <!-- Firebase Modular SDK with Automatic CDN Fallback for Mobile & Web -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import {
-            getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
-            onSnapshot, query, orderBy, serverTimestamp
-        } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+        const badge = document.getElementById("connection-badge");
+        const errorBanner = document.getElementById("firebase-error-banner");
+
+        async function loadFirebaseModules() {
+            try {
+                const appMod = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js");
+                const fsMod = await import("https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js");
+                return { appMod, fsMod };
+            } catch (primaryErr) {
+                console.warn("Primary Firebase CDN blocked, switching to jsDelivr mirror...", primaryErr);
+                badge.textContent = "Switching Mirror...";
+                const appMod = await import("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-app.js");
+                const fsMod = await import("https://cdn.jsdelivr.net/npm/firebase@10.7.1/firebase-firestore.js");
+                return { appMod, fsMod };
+            }
+        }
 
         const firebaseConfig = {
             apiKey: "AIzaSyC_hOZw707G-PdrK0A1aFqspyJu50LdTe4",
@@ -448,119 +499,685 @@
             measurementId: "G-5TEM82C7EN"
         };
 
-        const badge = document.getElementById("connection-badge");
-        const errorBanner = document.getElementById("firebase-error-banner");
-
         let db, sessionsCol;
         try {
+            const { appMod, fsMod } = await loadFirebaseModules();
+            const { initializeApp } = appMod;
+            const {
+                getFirestore, collection, doc, addDoc, updateDoc, deleteDoc,
+                onSnapshot, query, orderBy, serverTimestamp
+            } = fsMod;
+
             const app = initializeApp(firebaseConfig);
             db = getFirestore(app);
             sessionsCol = collection(db, "sessions");
             badge.textContent = "● Live System Ready";
             badge.className = "text-xs px-2.5 py-1 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800";
+
+            let visitorSessionId = localStorage.getItem("astro_visitor_session_id") || null;
+            let visitorName = localStorage.getItem("astro_visitor_name") || "";
+            let visitorBirth = localStorage.getItem("astro_visitor_birth") || "";
+            let visitorUnsubscribe = null;
+            let pendingChatImageBase64 = null;
+
+            let activeAdminSessionId = null;
+            let adminSessionsUnsubscribe = null;
+            let adminMessagesUnsubscribe = null;
+            let sessionsCache = {};
+            let isInitialAdminSnapshot = true;
+            let lastKnownTimestamps = {};
+            let currentPaymentMode = "upi";
+
+            function handleFirestoreError(err) {
+                console.error("Firestore error:", err);
+                const statusEl = document.getElementById("signup-status-msg");
+                errorBanner.style.display = "block";
+                if (statusEl) {
+                    statusEl.textContent = "Notice: " + (err.message || err.code || "Database error.");
+                    statusEl.style.display = "block";
+                }
+            }
+
+            function compressImageFile(file, maxDimension = 1000, quality = 0.72) {
+                return new Promise((resolve, reject) => {
+                    if (!file) return resolve(null);
+                    const reader = new FileReader();
+                    reader.onload = (e) => {
+                        const img = new Image();
+                        img.onload = () => {
+                            let w = img.width;
+                            let h = img.height;
+                            if (w > maxDimension || h > maxDimension) {
+                                if (w > h) {
+                                    h = Math.round((h * maxDimension) / w);
+                                    w = maxDimension;
+                                } else {
+                                    w = Math.round((w * maxDimension) / h);
+                                    h = maxDimension;
+                                }
+                            }
+                            const canvas = document.createElement("canvas");
+                            canvas.width = w;
+                            canvas.height = h;
+                            const ctx = canvas.getContext("2d");
+                            ctx.drawImage(img, 0, 0, w, h);
+                            const dataUrl = canvas.toDataURL("image/jpeg", quality);
+                            if (dataUrl.length > 850000) {
+                                reject(new Error("Image is too large. Please upload a smaller screenshot."));
+                            } else {
+                                resolve(dataUrl);
+                            }
+                        };
+                        img.onerror = () => reject(new Error("Could not read image file."));
+                        img.src = e.target.result;
+                    };
+                    reader.onerror = () => reject(new Error("Failed to load file."));
+                    reader.readAsDataURL(file);
+                });
+            }
+
+            function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false, imageData = null, upiPayload = null, paymentUrl = null) {
+                const wrapper = document.createElement("div");
+                wrapper.className = `max-w-[88%] sm:max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
+                    isRightSide
+                        ? "bg-amber-600 text-white self-end rounded-br-none"
+                        : "bg-slate-700 text-slate-100 self-start rounded-bl-none border border-slate-600"
+                }`;
+
+                const header = document.createElement("div");
+                header.className = `text-[10px] uppercase font-bold tracking-wider mb-1 ${
+                    isRightSide ? "text-amber-100 text-right" : "text-amber-400 text-left"
+                }`;
+                header.textContent = isAstrologerBadge ? `✦ ${senderLabel} (Astrologer)` : senderLabel;
+                wrapper.appendChild(header);
+
+                if (imageData) {
+                    const imgEl = document.createElement("img");
+                    imgEl.src = imageData;
+                    imgEl.alt = "Attached Natal Chart";
+                    imgEl.title = "Tap to zoom full size";
+                    imgEl.className = "max-h-60 w-auto rounded-lg border border-black/30 mb-2 cursor-zoom-in hover:opacity-95 transition";
+                    imgEl.onclick = () => openImageZoom(imageData);
+                    wrapper.appendChild(imgEl);
+                }
+
+                if (text) {
+                    const body = document.createElement("div");
+                    body.className = "whitespace-pre-wrap break-words leading-relaxed";
+                    body.textContent = text;
+                    wrapper.appendChild(body);
+                }
+
+                // Option A: Standalone Clickable Payment Link Card (Payhip / PayPal / Razorpay / Card)
+                if (paymentUrl) {
+                    const payLinkCard = document.createElement("div");
+                    payLinkCard.className = "mt-2.5 bg-slate-900/90 border border-emerald-500/60 rounded-lg p-3 text-center";
+
+                    const linkBtn = document.createElement("a");
+                    linkBtn.href = paymentUrl;
+                    linkBtn.target = "_blank";
+                    linkBtn.rel = "noopener noreferrer";
+                    linkBtn.className = "block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-4 rounded-lg shadow transition";
+                    linkBtn.textContent = "Complete Consultation Payment Online →";
+                    payLinkCard.appendChild(linkBtn);
+
+                    const subNote = document.createElement("div");
+                    subNote.className = "text-[10px] text-slate-400 mt-1.5";
+                    subNote.textContent = "After paying, tap 📎 below to attach your receipt screenshot.";
+                    payLinkCard.appendChild(subNote);
+
+                    wrapper.appendChild(payLinkCard);
+                }
+
+                // Option B: Dynamic UPI QR Code Card (+ Optional Payment Link Button Together)
+                if (upiPayload && upiPayload.upiUri) {
+                    const qrCard = document.createElement("div");
+                    qrCard.className = "mt-3 bg-slate-900 border border-amber-500/60 rounded-xl p-3.5 text-center shadow-inner";
+
+                    const title = document.createElement("div");
+                    title.className = "text-xs font-bold text-amber-400 mb-2";
+                    title.textContent = upiPayload.amount
+                        ? `Option 1: Scan UPI QR (₹${upiPayload.amount})`
+                        : "Option 1: Scan with Any UPI App";
+                    qrCard.appendChild(title);
+
+                    const qrContainer = document.createElement("div");
+                    qrContainer.className = "qr-box bg-white p-2.5 rounded-lg inline-block mb-2";
+                    qrCard.appendChild(qrContainer);
+
+                    if (window.QRCode) {
+                        new QRCode(qrContainer, {
+                            text: upiPayload.upiUri,
+                            width: 170,
+                            height: 170,
+                            colorDark: "#0f172a",
+                            colorLight: "#ffffff",
+                            correctLevel: QRCode.CorrectLevel.M
+                        });
+                    }
+
+                    const vpaLabel = document.createElement("div");
+                    vpaLabel.className = "text-[11px] text-slate-300 font-mono mb-2 select-all break-all";
+                    vpaLabel.textContent = `UPI ID: ${upiPayload.upiId} (${upiPayload.payeeName})`;
+                    qrCard.appendChild(vpaLabel);
+
+                    const mobileBtn = document.createElement("a");
+                    mobileBtn.href = upiPayload.upiUri;
+                    mobileBtn.className = "block w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs py-2.5 px-3 rounded-lg transition mb-2";
+                    mobileBtn.textContent = upiPayload.amount
+                        ? `Pay ₹${upiPayload.amount} via UPI App →`
+                        : "Open UPI App to Pay →";
+                    qrCard.appendChild(mobileBtn);
+
+                    if (upiPayload.paymentLinkUrl) {
+                        const divider = document.createElement("div");
+                        divider.className = "text-[10px] uppercase tracking-wider text-slate-400 my-1.5";
+                        divider.textContent = "— Or Pay via Online Link / Card —";
+                        qrCard.appendChild(divider);
+
+                        const altLinkBtn = document.createElement("a");
+                        altLinkBtn.href = upiPayload.paymentLinkUrl;
+                        altLinkBtn.target = "_blank";
+                        altLinkBtn.rel = "noopener noreferrer";
+                        altLinkBtn.className = "block w-full bg-amber-600 hover:bg-amber-500 text-white font-bold text-xs py-2.5 px-3 rounded-lg transition";
+                        altLinkBtn.textContent = "Option 2: Open Payment Link →";
+                        qrCard.appendChild(altLinkBtn);
+                    }
+
+                    const hint = document.createElement("div");
+                    hint.className = "text-[10px] text-slate-400 mt-2";
+                    hint.textContent = "After paying, tap 📎 below to attach your payment screenshot.";
+                    qrCard.appendChild(hint);
+
+                    wrapper.appendChild(qrCard);
+                }
+
+                return wrapper;
+            }
+
+            // ==========================================
+            // VISITOR FLOW
+            // ==========================================
+            function openVisitorChat(sessionId, name) {
+                document.getElementById("visitor-signup-screen").style.display = "none";
+                document.getElementById("astrologer-desk-screen").style.display = "none";
+                document.getElementById("visitor-chat-screen").style.display = "flex";
+
+                document.getElementById("visitor-session-subtitle").textContent =
+                    `Logged in as ${name} • Tap 📎 to attach chart or receipt`;
+
+                if (visitorUnsubscribe) visitorUnsubscribe();
+
+                const msgsRef = collection(db, "sessions", sessionId, "messages");
+                const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+                visitorUnsubscribe = onSnapshot(q, (snapshot) => {
+                    const container = document.getElementById("visitor-messages");
+                    container.innerHTML = "";
+                    if (snapshot.empty) {
+                        container.innerHTML = `<div class="text-center text-xs text-slate-400 my-4">Your private room is open. Nikita will respond shortly.</div>`;
+                    }
+                    snapshot.forEach((docSnap) => {
+                        const m = docSnap.data();
+                        const isClient = m.senderRole === "client";
+                        container.appendChild(
+                            createBubble(
+                                isClient ? m.senderName : "Nikita",
+                                m.text,
+                                isClient,
+                                !isClient,
+                                m.imageData || null,
+                                m.upiPayload || null,
+                                m.paymentUrl || null
+                            )
+                        );
+                    });
+                    container.scrollTop = container.scrollHeight;
+                }, handleFirestoreError);
+            }
+
+            if (visitorSessionId && visitorName && sessionStorage.getItem("nikita_astro_admin") !== "true") {
+                openVisitorChat(visitorSessionId, visitorName);
+            }
+
+            window.submitVisitorSession = async function () {
+                const name = document.getElementById("visitor-name").value.trim();
+                const birth = document.getElementById("visitor-birth").value.trim() || "Not provided";
+                const topic = document.getElementById("visitor-topic").value.trim();
+                const chartFile = document.getElementById("signup-chart-file").files[0];
+                const statusEl = document.getElementById("signup-status-msg");
+                statusEl.style.display = "none";
+
+                if (!name || !topic) return;
+
+                const btn = document.getElementById("start-session-btn");
+                btn.disabled = true;
+                btn.textContent = chartFile ? "Compressing Chart & Connecting..." : "Connecting to Live Room...";
+
+                try {
+                    const compressedChart = await compressImageFile(chartFile);
+
+                    const sessionDoc = await addDoc(sessionsCol, {
+                        clientName: name,
+                        birthDetails: birth,
+                        hasChart: Boolean(compressedChart),
+                        createdAt: serverTimestamp(),
+                        lastUpdated: serverTimestamp(),
+                        lastMessage: compressedChart ? `📊 [Chart Attached] ${topic}` : topic,
+                        unreadByAstrologer: true
+                    });
+
+                    const msgsRef = collection(db, "sessions", sessionDoc.id, "messages");
+                    await addDoc(msgsRef, {
+                        text: `Birth Details: ${birth}\n\nQuestion: ${topic}`,
+                        imageData: compressedChart || null,
+                        senderRole: "client",
+                        senderName: name,
+                        createdAt: serverTimestamp()
+                    });
+
+                    visitorSessionId = sessionDoc.id;
+                    visitorName = name;
+                    visitorBirth = birth;
+                    localStorage.setItem("astro_visitor_session_id", visitorSessionId);
+                    localStorage.setItem("astro_visitor_name", visitorName);
+                    localStorage.setItem("astro_visitor_birth", visitorBirth);
+
+                    sendEmailNotification(
+                        `New Astrology Consultation: ${name}`,
+                        name,
+                        birth,
+                        topic
+                    );
+
+                    openVisitorChat(visitorSessionId, visitorName);
+                } catch (err) {
+                    handleFirestoreError(err);
+                } finally {
+                    btn.disabled = false;
+                    btn.textContent = "Enter Live Consultation Room";
+                }
+            };
+
+            document.getElementById("visitor-chat-file").addEventListener("change", async (e) => {
+                const file = e.target.files[0];
+                if (!file) return;
+                try {
+                    pendingChatImageBase64 = await compressImageFile(file);
+                    document.getElementById("visitor-image-filename").textContent = `📊 Ready to send: ${file.name}`;
+                    document.getElementById("visitor-image-preview-bar").style.display = "flex";
+                } catch (err) {
+                    alert(err.message);
+                    e.target.value = "";
+                }
+            });
+
+            window.clearVisitorChatImage = function () {
+                pendingChatImageBase64 = null;
+                document.getElementById("visitor-chat-file").value = "";
+                document.getElementById("visitor-image-preview-bar").style.display = "none";
+            };
+
+            document.getElementById("visitor-chat-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const input = document.getElementById("visitor-msg-input");
+                const text = input.value.trim();
+                if ((!text && !pendingChatImageBase64) || !visitorSessionId) return;
+
+                const imageToSend = pendingChatImageBase64;
+                input.value = "";
+                window.clearVisitorChatImage();
+
+                try {
+                    const msgsRef = collection(db, "sessions", visitorSessionId, "messages");
+                    await addDoc(msgsRef, {
+                        text: text || "Attached image",
+                        imageData: imageToSend || null,
+                        senderRole: "client",
+                        senderName: visitorName,
+                        createdAt: serverTimestamp()
+                    });
+
+                    await updateDoc(doc(db, "sessions", visitorSessionId), {
+                        lastMessage: imageToSend ? `📎 [Image] ${text || "Chart / Receipt"}` : text,
+                        lastUpdated: serverTimestamp(),
+                        unreadByAstrologer: true
+                    });
+
+                    sendEmailNotification(
+                        `Client Reply from ${visitorName}`,
+                        visitorName,
+                        visitorBirth,
+                        imageToSend ? `[Image/Receipt Attached] ${text}` : text
+                    );
+                } catch (err) {
+                    handleFirestoreError(err);
+                }
+            });
+
+            document.getElementById("visitor-end-btn").addEventListener("click", () => {
+                if (visitorUnsubscribe) visitorUnsubscribe();
+                localStorage.removeItem("astro_visitor_session_id");
+                localStorage.removeItem("astro_visitor_name");
+                localStorage.removeItem("astro_visitor_birth");
+                visitorSessionId = null;
+                visitorName = "";
+                document.getElementById("visitor-chat-screen").style.display = "none";
+                document.getElementById("visitor-signup-screen").style.display = "block";
+            });
+
+            // ==========================================
+            // ASTROLOGER REALTIME INBOX, MUSIC & PAYMENTS
+            // ==========================================
+            window.initAstrologerRealtime = function () {
+                if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
+                isInitialAdminSnapshot = true;
+
+                adminSessionsUnsubscribe = onSnapshot(sessionsCol, (snapshot) => {
+                    const listEl = document.getElementById("sessions-list");
+                    document.getElementById("session-count").textContent = snapshot.size;
+                    listEl.innerHTML = "";
+                    sessionsCache = {};
+
+                    if (snapshot.empty) {
+                        listEl.innerHTML = `<div class="p-4 text-xs text-slate-500 text-center">No client consultations yet.</div>`;
+                        isInitialAdminSnapshot = false;
+                        return;
+                    }
+
+                    const items = [];
+                    let shouldChime = false;
+
+                    snapshot.forEach((docSnap) => {
+                        const data = docSnap.data();
+                        sessionsCache[docSnap.id] = data;
+                        const ts = data.lastUpdated && data.lastUpdated.toMillis ? data.lastUpdated.toMillis() : Date.now();
+                        items.push({ id: docSnap.id, data, ts });
+
+                        const prevTs = lastKnownTimestamps[docSnap.id] || 0;
+                        if (!isInitialAdminSnapshot && data.unreadByAstrologer && ts > prevTs) {
+                            shouldChime = true;
+                        }
+                        lastKnownTimestamps[docSnap.id] = ts;
+                    });
+
+                    if (shouldChime) {
+                        playCelestialNotification();
+                    }
+                    isInitialAdminSnapshot = false;
+
+                    items.sort((a, b) => b.ts - a.ts);
+
+                    items.forEach(({ id, data }) => {
+                        const item = document.createElement("button");
+                        item.type = "button";
+                        const isSelected = id === activeAdminSessionId;
+                        item.className = `w-full text-left p-3.5 transition flex flex-col gap-1 cursor-pointer ${
+                            isSelected ? "bg-slate-800 border-l-4 border-amber-500" : "hover:bg-slate-800/60"
+                        }`;
+
+                        const topRow = document.createElement("div");
+                        topRow.className = "flex justify-between items-center w-full gap-1";
+                        const nameSpan = document.createElement("span");
+                        nameSpan.className = "font-bold text-sm text-white truncate";
+                        nameSpan.textContent = (data.hasChart ? "📊 " : "") + (data.clientName || "Visitor");
+                        topRow.appendChild(nameSpan);
+
+                        if (data.unreadByAstrologer) {
+                            const newBadge = document.createElement("span");
+                            newBadge.className = "text-[10px] bg-amber-500 text-slate-950 font-bold px-1.5 py-0.5 rounded shrink-0";
+                            newBadge.textContent = "NEW";
+                            topRow.appendChild(newBadge);
+                        }
+
+                        const birthDiv = document.createElement("div");
+                        birthDiv.className = "text-[11px] text-amber-400/90 truncate";
+                        birthDiv.textContent = data.birthDetails || "";
+
+                        const msgDiv = document.createElement("div");
+                        msgDiv.className = "text-xs text-slate-400 truncate";
+                        msgDiv.textContent = data.lastMessage || "";
+
+                        item.appendChild(topRow);
+                        item.appendChild(birthDiv);
+                        item.appendChild(msgDiv);
+                        item.addEventListener("click", () => selectAdminSession(id));
+                        listEl.appendChild(item);
+                    });
+                }, handleFirestoreError);
+            };
+
+            window.stopAstrologerRealtime = function () {
+                if (adminSessionsUnsubscribe) adminSessionsUnsubscribe();
+                if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
+            };
+
+            if (sessionStorage.getItem("nikita_astro_admin") === "true") {
+                document.getElementById("visitor-signup-screen").style.display = "none";
+                document.getElementById("visitor-chat-screen").style.display = "none";
+                document.getElementById("astrologer-desk-screen").style.display = "flex";
+                document.getElementById("toggle-admin-modal-btn").style.display = "none";
+                document.getElementById("logout-admin-btn").style.display = "inline-block";
+                document.getElementById("sound-toggle-btn").style.display = "inline-block";
+                window.initAstrologerRealtime();
+            }
+
+            async function selectAdminSession(sessionId) {
+                activeAdminSessionId = sessionId;
+                const info = sessionsCache[sessionId] || {};
+
+                document.getElementById("active-client-name").textContent = info.clientName || "Client";
+                document.getElementById("active-client-birth").textContent = `Birth Details: ${info.birthDetails || "Not provided"}`;
+                document.getElementById("request-link-btn").style.display = "inline-block";
+                document.getElementById("request-upi-btn").style.display = "inline-block";
+                document.getElementById("delete-session-btn").style.display = "inline-block";
+
+                const replyInput = document.getElementById("admin-msg-input");
+                const sendBtn = document.getElementById("admin-send-btn");
+                replyInput.disabled = false;
+                sendBtn.disabled = false;
+                replyInput.placeholder = `Reply live to ${info.clientName || "client"}...`;
+
+                if (info.unreadByAstrologer) {
+                    try {
+                        await updateDoc(doc(db, "sessions", sessionId), { unreadByAstrologer: false });
+                    } catch (e) { console.error(e); }
+                }
+
+                if (adminMessagesUnsubscribe) adminMessagesUnsubscribe();
+
+                const msgsRef = collection(db, "sessions", sessionId, "messages");
+                const q = query(msgsRef, orderBy("createdAt", "asc"));
+
+                adminMessagesUnsubscribe = onSnapshot(q, (snapshot) => {
+                    const container = document.getElementById("admin-messages");
+                    container.innerHTML = "";
+                    snapshot.forEach((docSnap) => {
+                        const m = docSnap.data();
+                        const isAstrologer = m.senderRole === "astrologer";
+                        container.appendChild(
+                            createBubble(
+                                isAstrologer ? "Nikita" : (m.senderName || "Client"),
+                                m.text,
+                                isAstrologer,
+                                isAstrologer,
+                                m.imageData || null,
+                                m.upiPayload || null,
+                                m.paymentUrl || null
+                            )
+                        );
+                    });
+                    container.scrollTop = container.scrollHeight;
+                }, handleFirestoreError);
+            }
+
+            // ==========================================
+            // MOBILE-SAFE PAYMENT MODAL HANDLERS
+            // ==========================================
+            window.closePaymentModal = function () {
+                document.getElementById("payment-request-modal").style.display = "none";
+            };
+
+            function openPaymentModal(mode) {
+                if (!activeAdminSessionId) return;
+                currentPaymentMode = mode;
+
+                const modal = document.getElementById("payment-request-modal");
+                const upiFields = document.getElementById("pay-modal-upi-fields");
+                const titleEl = document.getElementById("pay-modal-title");
+                const linkLabel = document.getElementById("modal-link-label");
+
+                const savedUpi = localStorage.getItem("nikita_saved_upi_id") ||
+                    ((UPI_ID && UPI_ID !== "yourname@okicici") ? UPI_ID : "");
+                const savedLink = localStorage.getItem("nikita_saved_pay_link") ||
+                    ((DEFAULT_PAYMENT_LINK && !DEFAULT_PAYMENT_LINK.includes("YOUR_STORE_LINK")) ? DEFAULT_PAYMENT_LINK : "");
+
+                document.getElementById("modal-upi-id").value = savedUpi;
+                document.getElementById("modal-upi-amount").value = DEFAULT_UPI_AMOUNT || "";
+                document.getElementById("modal-payment-link").value = savedLink;
+
+                if (mode === "link") {
+                    titleEl.textContent = "🔗 Send Payment Link";
+                    linkLabel.textContent = "Payment Link (Payhip / PayPal / Razorpay) *";
+                    upiFields.style.display = "none";
+                } else {
+                    titleEl.textContent = "📲 Send UPI QR Code + Payment Link";
+                    linkLabel.textContent = "Online Payment Link (Optional — shown alongside QR)";
+                    upiFields.style.display = "block";
+                }
+
+                modal.style.display = "flex";
+            }
+
+            document.getElementById("request-link-btn").addEventListener("click", () => openPaymentModal("link"));
+            document.getElementById("request-upi-btn").addEventListener("click", () => openPaymentModal("upi"));
+
+            document.getElementById("confirm-send-payment-btn").addEventListener("click", async () => {
+                if (!activeAdminSessionId) return;
+
+                const linkVal = document.getElementById("modal-payment-link").value.trim();
+                const noteVal = document.getElementById("modal-payment-note").value.trim() ||
+                    "Please complete your consultation payment below:";
+
+                if (linkVal) {
+                    localStorage.setItem("nikita_saved_pay_link", linkVal);
+                }
+
+                try {
+                    const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
+
+                    if (currentPaymentMode === "link") {
+                        if (!linkVal) {
+                            alert("Please paste your payment link first.");
+                            return;
+                        }
+                        await addDoc(msgsRef, {
+                            text: noteVal,
+                            paymentUrl: linkVal,
+                            senderRole: "astrologer",
+                            senderName: "Nikita",
+                            createdAt: serverTimestamp()
+                        });
+                        await updateDoc(doc(db, "sessions", activeAdminSessionId), {
+                            lastMessage: "🔗 Payment link sent",
+                            lastUpdated: serverTimestamp(),
+                            unreadByAstrologer: false
+                        });
+                    } else {
+                        const upiVal = document.getElementById("modal-upi-id").value.trim();
+                        if (!upiVal) {
+                            alert("Please enter your UPI ID.");
+                            return;
+                        }
+                        localStorage.setItem("nikita_saved_upi_id", upiVal);
+
+                        const cleanAmount = document.getElementById("modal-upi-amount").value.trim().replace(/[^0-9.]/g, "");
+                        const params = new URLSearchParams({
+                            pa: upiVal,
+                            pn: UPI_PAYEE_NAME,
+                            cu: "INR",
+                            tn: "Astrology Consultation"
+                        });
+                        if (cleanAmount) {
+                            params.set("am", Number(cleanAmount).toFixed(2));
+                        }
+                        const upiUri = `upi://pay?${params.toString()}`;
+
+                        await addDoc(msgsRef, {
+                            text: noteVal,
+                            upiPayload: {
+                                upiUri,
+                                upiId: upiVal,
+                                payeeName: UPI_PAYEE_NAME,
+                                amount: cleanAmount || "",
+                                paymentLinkUrl: linkVal
+                            },
+                            senderRole: "astrologer",
+                            senderName: "Nikita",
+                            createdAt: serverTimestamp()
+                        });
+                        await updateDoc(doc(db, "sessions", activeAdminSessionId), {
+                            lastMessage: cleanAmount ? `📲 UPI QR & Link sent (₹${cleanAmount})` : "📲 UPI QR & Link sent",
+                            lastUpdated: serverTimestamp(),
+                            unreadByAstrologer: false
+                        });
+                    }
+
+                    window.closePaymentModal();
+                } catch (err) {
+                    handleFirestoreError(err);
+                }
+            });
+
+            document.getElementById("admin-reply-form").addEventListener("submit", async (e) => {
+                e.preventDefault();
+                const input = document.getElementById("admin-msg-input");
+                const text = input.value.trim();
+                if (!text || !activeAdminSessionId) return;
+
+                input.value = "";
+                try {
+                    const msgsRef = collection(db, "sessions", activeAdminSessionId, "messages");
+                    await addDoc(msgsRef, {
+                        text,
+                        senderRole: "astrologer",
+                        senderName: "Nikita",
+                        createdAt: serverTimestamp()
+                    });
+
+                    await updateDoc(doc(db, "sessions", activeAdminSessionId), {
+                        lastMessage: `Nikita: ${text}`,
+                        lastUpdated: serverTimestamp(),
+                        unreadByAstrologer: false
+                    });
+                } catch (err) {
+                    handleFirestoreError(err);
+                }
+            });
+
+            document.getElementById("delete-session-btn").addEventListener("click", async () => {
+                if (!activeAdminSessionId) return;
+                if (!confirm("Delete this consultation thread?")) return;
+                try {
+                    await deleteDoc(doc(db, "sessions", activeAdminSessionId));
+                    activeAdminSessionId = null;
+                    document.getElementById("active-client-name").textContent = "Select a client above / left";
+                    document.getElementById("active-client-birth").textContent = "Session deleted.";
+                    document.getElementById("admin-messages").innerHTML = "";
+                    document.getElementById("request-link-btn").style.display = "none";
+                    document.getElementById("request-upi-btn").style.display = "none";
+                    document.getElementById("delete-session-btn").style.display = "none";
+                    document.getElementById("admin-msg-input").disabled = true;
+                    document.getElementById("admin-send-btn").disabled = true;
+                } catch (err) {
+                    handleFirestoreError(err);
+                }
+            });
         } catch (err) {
             console.error("Firebase init error:", err);
-            badge.textContent = "● Offline Error";
+            badge.textContent = "● Blocked: " + (err.message || "Check Network");
             badge.className = "text-xs px-2.5 py-1 rounded-full bg-red-950 text-red-400 border border-red-800";
         }
-
-        let visitorSessionId = localStorage.getItem("astro_visitor_session_id") || null;
-        let visitorName = localStorage.getItem("astro_visitor_name") || "";
-        let visitorBirth = localStorage.getItem("astro_visitor_birth") || "";
-        let visitorUnsubscribe = null;
-        let pendingChatImageBase64 = null;
-
-        let activeAdminSessionId = null;
-        let adminSessionsUnsubscribe = null;
-        let adminMessagesUnsubscribe = null;
-        let sessionsCache = {};
-        let isInitialAdminSnapshot = true;
-        let lastKnownTimestamps = {};
-
-        function handleFirestoreError(err) {
-            console.error("Firestore error:", err);
-            const statusEl = document.getElementById("signup-status-msg");
-            errorBanner.style.display = "block";
-            if (statusEl) {
-                statusEl.textContent = "Notice: " + (err.message || err.code || "Database error.");
-                statusEl.style.display = "block";
-            }
-        }
-
-        function compressImageFile(file, maxDimension = 1000, quality = 0.72) {
-            return new Promise((resolve, reject) => {
-                if (!file) return resolve(null);
-                const reader = new FileReader();
-                reader.onload = (e) => {
-                    const img = new Image();
-                    img.onload = () => {
-                        let w = img.width;
-                        let h = img.height;
-                        if (w > maxDimension || h > maxDimension) {
-                            if (w > h) {
-                                h = Math.round((h * maxDimension) / w);
-                                w = maxDimension;
-                            } else {
-                                w = Math.round((w * maxDimension) / h);
-                                h = maxDimension;
-                            }
-                        }
-                        const canvas = document.createElement("canvas");
-                        canvas.width = w;
-                        canvas.height = h;
-                        const ctx = canvas.getContext("2d");
-                        ctx.drawImage(img, 0, 0, w, h);
-                        const dataUrl = canvas.toDataURL("image/jpeg", quality);
-                        if (dataUrl.length > 850000) {
-                            reject(new Error("Image is too large. Please upload a smaller screenshot."));
-                        } else {
-                            resolve(dataUrl);
-                        }
-                    };
-                    img.onerror = () => reject(new Error("Could not read image file."));
-                    img.src = e.target.result;
-                };
-                reader.onerror = () => reject(new Error("Failed to load file."));
-                reader.readAsDataURL(file);
-            });
-        }
-
-        function createBubble(senderLabel, text, isRightSide, isAstrologerBadge = false, imageData = null, upiPayload = null, paymentUrl = null) {
-            const wrapper = document.createElement("div");
-            wrapper.className = `max-w-[85%] rounded-xl px-3.5 py-2.5 text-sm shadow ${
-                isRightSide
-                    ? "bg-amber-600 text-white self-end rounded-br-none"
-                    : "bg-slate-700 text-slate-100 self-start rounded-bl-none border border-slate-600"
-            }`;
-
-            const header = document.createElement("div");
-            header.className = `text-[10px] uppercase font-bold tracking-wider mb-1 ${
-                isRightSide ? "text-amber-100 text-right" : "text-amber-400 text-left"
-            }`;
-            header.textContent = isAstrologerBadge ? `✦ ${senderLabel} (Astrologer)` : senderLabel;
-            wrapper.appendChild(header);
-
-            if (imageData) {
-                const imgEl = document.createElement("img");
-                imgEl.src = imageData;
-                imgEl.alt = "Attached Natal Chart";
-                imgEl.title = "Click to zoom full size";
-                imgEl.className = "max-h-60 w-auto rounded-lg border border-black/30 mb-2 cursor-zoom-in hover:opacity-95 transition";
-                imgEl.onclick = () => openImageZoom(imageData);
-                wrapper.appendChild(imgEl);
-            }
-
-            if (text) {
-                const body = document.createElement("div");
-                body.className = "whitespace-pre-wrap break-words leading-relaxed";
-                body.textContent = text;
-                wrapper.appendChild(body);
-            }
-
-            // Option A: Standalone Clickable Payment Link Card (Payhip / PayPal / Razorpay / Card)
-            if (paymentUrl) {
-                const payLinkCard = document.createElement("div");
-                payLinkCard.className = "mt-2.5 bg-slate-900/90 border border-emerald-500/60 rounded-lg p-3 text-center";
-
-                const linkBtn = document.createElement("a");
-                linkBtn.href
+    </script>
+</body>
+</html>
